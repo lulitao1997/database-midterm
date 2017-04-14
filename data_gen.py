@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from random import choice, randint, sample
 from random_words import *
+import pymysql
 import string
 
 rw = RandomWords()
+db = pymysql.connect(host='localhost', port=3306, password="", user='root', database='edu_manage')
 
 last_name = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许',
 '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜', '戚', '谢', '邹', '喻', '柏', '水', '窦', '章',
@@ -108,8 +110,17 @@ if __name__ == '__main__':
     course_l = [rand_course() for i in range(15)]
     teacher_l = [rand_teacher() for i in range(20)]
     performance_l = [rand_performance() for i in range(200)]
+    teach_rel_l = [rand_teach_rel for i in range(20)]
     ctime_l = list()
-    for i in course_l:
-        for j in gen_ctime(i[0]):
-            ctime_l.append(j)
-    print(ctime_l)
+    print(gen_sql('course_time', ctime_l))
+    cursor = db.cursor()
+    try:
+        cursor.execute(gen_sql('student', stu_l))
+        cursor.execute(gen_sql('course', course_l))
+        cursor.execute(gen_sql('teacher', teacher_l))
+        cursor.execute(gen_sql('performance', performance_l))
+        cursor.execute(gen_sql('teach_rel', teach_rel_l))
+        cursor.execute(gen_sql('course_time', ctime_l))
+        cursor.commit()
+    except:
+        cursor.rollback()

@@ -27,7 +27,7 @@ create table course_time (
     wnum    smallint    not null, -- 1~7, Monday~Sunday
     cnum    smallint    not null, -- course count 1~14
     foreign key(cno) references course(cno)
-)
+);
 
 create table student (
     sno     char(11)    not null, -- like 15307130084
@@ -42,7 +42,7 @@ create table teach_rel (
     cno     char(13)    not null,
     foreign key(tno) references teacher(tno),
     foreign key(cno) references course(cno)
-)
+);
 
 create table performance (
     sno     char(11)    not null,
@@ -50,4 +50,4 @@ create table performance (
     grade   decimal(4,1),
     foreign key(sno) references student(sno),
     foreign key(cno) references course(cno)
-)
+);

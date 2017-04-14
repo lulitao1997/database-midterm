@@ -5,7 +5,7 @@ import pymysql
 import string
 
 rw = RandomWords()
-db = pymysql.connect(host='localhost', port=3306, password="", user='root', database='edu_manage')
+db = pymysql.connect(host='localhost', port=3306, password="", user='root', database='edu_manage', charset='utf8')
 
 last_name = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许',
 '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜', '戚', '谢', '邹', '喻', '柏', '水', '窦', '章',
@@ -35,11 +35,11 @@ def rand_ns(N):
 tno_s = set()
 def rand_tno():
     global tno_s
-    n = rand_ns(4)
+    n = '0'+rand_ns(4)
     while n in tno_s:
-        n = rand_ns(4)
+        n = '0' + rand_ns(4)
     tno_s.add(n)
-    return str(n).rjust(5,'0')
+    return n
 
 def rand_teacher():
     return (rand_tno(), rand_name(), choice(['M','F']), choice(['Professor', 'Lecturer']), rand_str(8))
@@ -101,26 +101,28 @@ def gen_ctime(cno):
 def gen_sql(table, L):
     cmd = 'INSERT INTO ' + table + ' VALUES'
     for i in L:
-        cmd += '\n'+str(i)
-    cmd += ';'
-    return cmd
+        cmd += '\n'+str(i)+','
+    return cmd[:-1]+';'
 
 if __name__ == '__main__':
     stu_l = [rand_stu() for i in range(100)]
     course_l = [rand_course() for i in range(15)]
     teacher_l = [rand_teacher() for i in range(20)]
     performance_l = [rand_performance() for i in range(200)]
-    teach_rel_l = [rand_teach_rel for i in range(20)]
+    teach_rel_l = [rand_teach_rel() for i in range(20)]
     ctime_l = list()
-    print(gen_sql('course_time', ctime_l))
-    cursor = db.cursor()
+    for i in course_l:
+        for j in gen_ctime(i[0]):
+            ctime_l.append(j)
+    # print(gen_sql('teach_rel', teach_rel_l))
     try:
+        cursor = db.cursor()
         cursor.execute(gen_sql('student', stu_l))
         cursor.execute(gen_sql('course', course_l))
         cursor.execute(gen_sql('teacher', teacher_l))
         cursor.execute(gen_sql('performance', performance_l))
         cursor.execute(gen_sql('teach_rel', teach_rel_l))
         cursor.execute(gen_sql('course_time', ctime_l))
-        cursor.commit()
+        db.commit()
     except:
-        cursor.rollback()
+        db.rollback()

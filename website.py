@@ -1,7 +1,6 @@
 
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, session, request, redirect, flash, g
-
 import pymysql
 import json
 import hashlib

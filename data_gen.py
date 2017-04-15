@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from random import choice, randint, sample
 from random_words import *
+from itertools import product
 import pymysql
 import string
 
@@ -34,7 +35,6 @@ def rand_ns(N):
 
 tno_s = set()
 def rand_tno():
-    global tno_s
     n = '0'+rand_ns(4)
     while n in tno_s:
         n = '0' + rand_ns(4)
@@ -48,7 +48,6 @@ major_n = ['713', '710']
 scnt = dict()
 sno_s = set()
 def rand_sno():
-    global major_cnt, sno_s
     pre = str(randint(13,16)) + '30' + choice(major_n)
     if pre not in scnt:
         scnt[pre] = 1
@@ -65,7 +64,6 @@ course_code = ['COMP', 'PEDU', 'INFO', 'LAWS']
 ccnt = dict()
 cno_s = set()
 def rand_cno():
-    global ccnt, cno_s
     pre = choice(course_code) + '130' + rand_ns(3)
     if pre not in ccnt:
         ccnt[pre] = 1
@@ -104,12 +102,12 @@ def gen_sql(table, L):
         cmd += '\n'+str(i)+','
     return cmd[:-1]+';'
 
-if __name__ == '__main__':
+def gen_data():
     stu_l = [rand_stu() for i in range(100)]
     course_l = [rand_course() for i in range(15)]
     teacher_l = [rand_teacher() for i in range(20)]
     performance_l = [rand_performance() for i in range(200)]
-    teach_rel_l = [rand_teach_rel() for i in range(20)]
+    teach_rel_l = sample(list(product(list(tno_s), list(cno_s))), 20)
     ctime_l = list()
     for i in course_l:
         for j in gen_ctime(i[0]):
@@ -126,3 +124,13 @@ if __name__ == '__main__':
         db.commit()
     except:
         db.rollback()
+
+def reset():
+    with open('schema.sql', 'r') as f:
+        cursor = db.cursor()
+        cursor.execute(f.read())
+        db.commit()
+    gen_data()
+
+if __name__ == '__main__':
+    reset()

@@ -10,11 +10,7 @@ db = pymysql.connect(host='localhost', port=3306, password="", user='root', data
 
 last_name = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许',
 '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜', '戚', '谢', '邹', '喻', '柏', '水', '窦', '章',
-'云', '苏', '潘', '葛', '奚', '范', '彭', '郎', '鲁', '韦', '昌', '马', '苗', '凤', '花', '方', '俞', '任', '袁', '柳',
-'酆', '鲍', '史', '唐', '费', '廉', '岑', '薛', '雷', '贺', '倪', '汤', '滕', '殷', '罗', '毕', '郝', '邬', '安', '常',
-'乐', '于', '时', '傅', '皮', '卞', '齐', '康', '伍', '余', '元', '卜', '顾', '孟', '平', '黄', '和', '穆', '萧', '尹',
-'姚', '邵', '堪', '汪', '祁', '毛', '禹', '狄', '米', '贝', '明', '臧', '计', '伏', '成', '戴', '谈', '宋', '茅', '庞',
-'熊', '纪', '舒', '屈', '项', '祝', '董', '梁']
+'云', '苏', '潘', '葛', '奚', '范', '彭', '郎', '鲁', '韦', '昌', '马', '苗', '凤', '花', '方', '俞', '任', '袁', '柳']
 
 first_name = ['晨', '辰', '士', '以', '建', '家', '致', '树', '炎', '德', '行', '时', '泰', '盛', '雄', '琛', '钧', '冠', '策',
 '腾', '伟', '刚', '勇', '毅', '俊', '峰', '强', '军', '平', '保', '东', '文', '辉', '力', '明', '永', '健', '世', '广', '志',
@@ -78,13 +74,13 @@ def rand_cname(cap = True, cnt = 2):
     return ' '.join(map(str.capitalize, l) if cap else l)
 
 def rand_course():
-    return (rand_cno(), rand_cname(), randint(3,5), 5*randint(4,25), rand_cname(False, randint(10,20)))
+    return (rand_cno(), rand_cname(), randint(3,5), 5*randint(4,25), rand_cname(False, randint(10,20)).capitalize()+'.')
 
 def rand_teach_rel():
     return (choice(list(tno_s)), choice(list(cno_s)))
 
 def rand_performance():
-    return(choice(list(sno_s)), choice(list(cno_s)), randint(0,1000)/10)
+    return(choice(list(sno_s)), choice(list(cno_s)), None if (randint(0,3)==0) else randint(0,1000)/10)
 
 def gen_ctime(cno):
     ctime_l = list()
@@ -99,7 +95,7 @@ def gen_ctime(cno):
 def gen_sql(table, L):
     cmd = 'INSERT INTO ' + table + ' VALUES'
     for i in L:
-        cmd += '\n'+str(i)+','
+        cmd += '\n'+str(i).replace('None','NULL')+','
     return cmd[:-1]+';'
 
 def gen_data():

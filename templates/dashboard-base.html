@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2">
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a class="nav-link {{ ACTIVE_curriculum }}" href="#">Curriculum <span class="sr-only">(current)</span></a>
+          <a class="nav-link {{ ACTIVE_curriculum }}" href="#">List <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </nav>
+    <main class="col-md-10">
+    	{% block dashboard_content %}
+    	{% endblock %}
+    <main>
+  </div>  	
+</div>
+{% endblock %}

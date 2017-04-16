@@ -18,8 +18,8 @@ def test_dashboard_curriculum():
 def test_dashboard_coursesavailable():
 	course = [('computer', 'z201'), ('love','z202')]
 	return render_template('dashboard-coursesavailable.html', course = course)
-	
-	
+
+
 @app.route('/test/dashboard-coursespossessed')
 def test_dashboard_coursespossessed():
 	course = [('computer', 'z201'), ('love','z202')]
@@ -27,15 +27,13 @@ def test_dashboard_coursespossessed():
 
 @app.route('/test/welcome')
 def test_welcome():
-	return render_template('welcome.html')	
-	
+	return render_template('welcome.html')
+
 @app.route('/test/welcome', methods=['POST'])
 def gologin():
 	return redirect('/test/login')
-	
+
 @app.route('/test/login')
 def login():
 	return render_template('login.html')
 app.run(debug = False)
-
-

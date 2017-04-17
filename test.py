@@ -16,8 +16,15 @@ def test_dashboard_curriculum():
 
 @app.route('/test/dashboard-coursesavailable')
 def test_dashboard_coursesavailable():
-	course = [('computer', 'z201'), ('love','z202')]
-	return render_template('dashboard-coursesavailable.html', course = course)
+	computer = dict()
+	computer['cid']=12345
+	computer['cells'] = ['1-1','2-2','3-3']
+	computer['info'] = ('12345', 'computer', 'wang', '1', '100')
+	computer['done'] = True
+	cs = { 'cid': 123, 'cells': ['1-3','4-5'], 'info': ('123', 'cs', 'wang', '1', '100'), 'done': False }
+	course = [computer, cs]
+	cname = np.ones((20,20))	
+	return render_template('dashboard-coursesavailable.html', course = course, cname = cname)
 	
 	
 @app.route('/test/dashboard-coursespossessed')
@@ -36,6 +43,6 @@ def gologin():
 @app.route('/test/login')
 def login():
 	return render_template('login.html')
-app.run(debug = False)
+app.run(debug = True)
 
 

@@ -22,40 +22,19 @@
       <tr>
         <td>{{ j }}</td>
         {% for i in [ 7, 1, 2, 3, 4, 5, 6 ] %}
-        <td id="{{ i }}-{{ j }}">{{ cname[i, j] }}</td>
+        <td id="{{ i }}-{{ j }}">{{ cnameincell[i][j] }}</td>
         {% endfor %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<hr>
+<br>
+<h2>可选课程</h2>
 <div class="table-responsive">
-  <form method="POST"> 
-	<table class="table table-striped table-bordered">	
-	  <div class="row">
-		<div class="col-md-2"> <h3>检索课程</h3></div>
-	  </div>
-	  <thead>
-		<th>课程编号</th>
-		<th>课程名</th>
-		<th>教师</th>
-	  </thead>
-	  <tbody> 
-		<tr>
-		  <th><input style="width: 270px;" type="text" class="form-control" name="cno"></th>
-		  <th><input style="width: 270px;" type="text" class="form-control" name="cname"></th>
-		  <th><input style="width: 270px;" type="text" class="form-control" name="tname"></th>
-		<tr>
-	  </tbody>	
-	</table>
-	<button class="btn btn-md btn-primary btn-block" type="submit" style="display: inline-block; width: 100px">检索</button>	
-  </form>
-  <hr>
   <table class="table table-striped table-bordered">
-	<br>
-	<div class="row">
-	  <div class="col-md-2"> <h3>可选课程</h3></div>
-	</div>
 	<thead>
 	  <th><div style="width: 140px;">课程编号</div></th>
 	  <th><div style="width: 140px;">课程名</div></th>
@@ -66,26 +45,66 @@
 	</thead>
 	<tbody>
 	  {% for cou in course %}
+	  <form method="POST">
 	  <tr>
 		{% for info in cou.info %}
 		<th onclick="HighLightCell{{ cou.cid }}()">{{ info }} </th>
 		{% endfor %}
-		<th><button class="btn btn-sm btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-block" type=submit>
-			{%- if cou.done -%}重修{%- else -%}选课{%- endif -%}
-		</button></th>		
+		<th>
+			<input type="hidden" name="select" value="{{ cou.cid }}"></input>
+			<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-block btn-sm" type=submit>
+				{%- if cou.done -%}重修{%- else -%}选课{%- endif -%}
+			</button>
+		</th>
 	  </tr>
+	  </form>
 	  {% endfor %}
 	</tbody>
 	<table>
-</div> 
-
+  <ul class="pagination justify-content-center">
+    <form method="POST">
+		<input type="hidden" name="turnpage" value=""></input>
+		<li class="page-item {% if pagenumber == 1 -%} disabled {%- endif -%}">
+		  <a class="page-link" type="submit" name="turnpage" value="past" tabindex="-1"><<</a>
+		</li>
+		{% for i in range(pageamount) %}
+		<li class="page-item {% if pagenumber == i + 1 -%}active{%- endif -%}"><a class="page-link" type="submit" name="turnpage" value="{{ i + 1 }}"> {{ i + 1 }}</a></li>
+		{% endfor %}
+		<li class="page-item {% if pagenumber == pageamount -%} disabled {%- endif -%}">
+		  <a class="page-link" type="submit" name="turnpage" value="next">>></a>
+		</li>
+    </form>
+  </ul>
+<br>
+<hr>
+<br>
+<h2>检索课程</h2>
+	<table class="table table-striped table-bordered">	
+	  <thead>
+		<th>课程编号</th>
+		<th>课程名</th>
+		<th>教师</th>
+		<th>选项</th>
+	  </thead>
+	  <form method="post">
+	  <input type="hidden" name="search" value=""></input>
+	  <tbody>
+		<tr>
+		  <th><div style="width: 240px;"><input type="text" class="form-control" name="cno"></input></div></th>
+		  <th><div style="width: 240px;"><input type="text" class="form-control" name="cname"></input></div></th>
+		  <th><div style="width: 240px;"><input type="text" class="form-control" name="tname"></input></div></th>
+		  <th><button class="btn btn-sm btn-primary btn-block" type="submit" style="display: inline-block; width: 40px">检索</button></th>
+		<tr>
+	  </tbody>
+	  </form>
+	</table>
 <script>
 	function clear() {
 		for (var i = 1; i <= 14; i++)
 		for (var j = 1; j <= 7; j++) {
 			document.getElementById(j + '-' + i).style.background="";
 		}	
-	}
+	}s
 	
 	{% for cou in course %}
 		function HighLightCell{{ cou.cid }}() {

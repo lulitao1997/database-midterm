@@ -5,26 +5,24 @@
 -- 获得@sid已经选过的所有课程
 select * from performance where sno=@sid;
 
--- 获得@sid的平均分
-select AVG(grade) from performance where sno=@sid and grade is not NULL
+-- 获得@sid的平均分,总学分
+select AVG(grade), SUM(credit) from performance natural join course
+where sno=@sid and grade is not NULL
 group by sno;
 
--- 获得
+-- 获得全部学生的成绩表
+@rank_table=(
 select * from (
-    select A.*, @rank:=@rank+1 as rnk
+    select @rank:=@rank+1 as rnk, A.*
     from (
-        select sno, avg(grade) as ag from performance
+        select sno, avg(grade) as avg_grade, sum(credit) as tot_credit
+        from performance natural join course
         where grade is not NULL
         group by sno
-        order by ag desc
+        order by avg_grade desc
     ) A, (select @rank:=0) B
 ) M
-order by rnk;
--- 获得全部学生的成绩表
-select sno, AVG(grade) from performance
-where grade is not NULL
-group by sno
-order by AVG(grade) desc;
+order by rnk);
 
 -- 获得id选过的所有时间
 select wnum, cnum from performance natural join course_time

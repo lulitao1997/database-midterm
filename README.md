@@ -59,9 +59,6 @@
 
 # todo
 
-email 改成 username
-wecolme.html 中点击登录按钮后会出现Method Not Allowed错误
-
 
 # dashboard
 

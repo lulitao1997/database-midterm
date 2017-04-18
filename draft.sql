@@ -3,7 +3,7 @@
 -- Student
 -- set @sid='15307100008';
 -- 获得@sid已经选过的所有课程
-select * from performance where sno=@sid;
+select distinct cname, cno from performance natural join course where sno=@sid;
 
 -- 获得@sid的平均分,总学分
 select AVG(grade), SUM(credit) from performance natural join course

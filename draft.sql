@@ -57,3 +57,11 @@ select * from performance where cno=@cid;
 select distinct * from student natural join performance natural join teach_rel
 where tno=@tid
 order by cno;
+
+#include <iostream>
+using namespace std;
+int main() {
+    int a,b;
+    cin>>a>>b;
+    cout<<a+b<<endl;
+}

@@ -4,66 +4,59 @@ from flask import Flask, render_template, session, request, redirect, flash, g
 import pymysql
 import json
 import hashlib
-
-app = Flask(__name__, static_url_path='')
+from flask_bootstrap import Bootstrap
+app = Flask(__name__)
+app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.secret_key = 'really_strong_psw'
-db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='pj')
+db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='edu_manage')
 
-# def sql_wrapper(table_name, attributes, sql_override=None):
-#     def func(id):
-#         if (id == None): return None
-#
-#         cursor = dbConnection.cursor()
-#         cursor.execute(sql_override if sql_override is not None else 'select ' + ','.join(
-#             attributes) + ' from ' + table_name + ' where id=%s',
-#                        [id])
-#         result = cursor.fetchall()
-#         if len(result) == 0:
-#             return None
-#         else:
-#             ret = {}
-#             for i in range(0, len(attributes)):
-#                 ret[attributes[i]] = result[0][i]
-#
-#             return ret
-#     return func
-
-def get_authed_user():
-    return get_user(session.get('user_id'), None)
+# def get_authed_user():
+#     return get_user(session.get('username', None))
 
 @app.before_request
 def before_request():
-    g.authed_user = get_authed_user()
+    g.name = session.get('name', None)
+    g.id = session.get('id', None)
     g.url_path = request.path
+    if g.id is None and g.url_path not in {'/', '/login'}:
+        return redirect('/')
 
-@app.route('/auth/logout')
+@app.route('/')
+def page_home():
+    return render_template('welcome.html')
+
+@app.route('/logout')
 def page_logout():
     flash('登出成功', 'success')
-    del session['user_id']
+    del session['id']
+    del session['name']
     return redirect('/')
 
-@app.route('/auth/login')
+@app.route('/login')
 def page_login():
     return render_template('login.html')
 
-@app.route('/auth/login', methods = ['POST'])
+@app.route('/login', methods = ['POST'])
 def page_login_post():
-    sno = request.form['username']
+    id = request.form['username']
     psw = request.form['password']
     cursor = db.cursor()
     # cursor.execute('select id,password from `user` where name=%s', [username])
-    cursor.execute('select sno, psw from from student where sno=%s', [sno])
+    is_stu = False;
+    if (len(id)==11):
+        cursor.execute('select sno, psw, sname from student where sno=%s', [id])
+        is_stu = True
+    else:
+        cursor.execute('select tno, psw, tname, from teacher where tno=%s', [id])
     result = cursor.fetchall()
-
-    if len(result)==0 or hash(psw+sno) != result[0][1]:
+    if len(result)==0 or psw!=result[0][1]: # TODO: change to hash
         flash('用户名或密码错误', 'error')
-        return redirect('auth/login')
-
-    session['user_id'] = result[0][0]
-
-    # flash("欢迎：" + username + u"。登入成功！", 'success')
+        return redirect('/login')
+    name = result[0][2]
+    session['id'] = result[0][0]
+    session['name'] = name
+    flash("欢迎：" + name + u"。登入成功！", 'success')
     return redirect('/')
-
 
 def hash(psw):
     m = hashlib.sha256()

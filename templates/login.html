@@ -3,14 +3,14 @@
 {% block page_content %}
 <div class="jumbotron">
   <div class="container" style="width: 300px;">
-    <form class="form-signin">
+    <form class="form-signin" method="POST">
       <h2 class="form-signin-heading">登录</h2>
       <br>
-      <input type="text" id="inputUsername" class="form-control" placeholder="请输入您的学号或工号" required="">
+      <input type="text" id="inputUsername" name="username" class="form-control" placeholder="请输入您的学号或工号" required="">
       <br>
-      <input type="password" id="inputPassword" class="form-control" placeholder="请输入您的密码" required="">
+      <input type="password" id="inputPassword" name="password" class="form-control" placeholder="请输入您的密码" required="">
       <br>
-      <button class="btn btn-lg btn-primary btn-block" type="submit", methods="POST">登录</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
     </form>
   </div>
 </div>

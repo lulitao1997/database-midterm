@@ -18,12 +18,16 @@ def before_request():
     g.name = session.get('name', None)
     g.id = session.get('id', None)
     g.url_path = request.path
-    if g.id is None and g.url_path not in {'/', '/login'}:
-        return redirect('/')
+    if g.id is None and g.url_path not in {'/', '/login', '/please_login'}:
+        return redirect('/please_login')
 
 @app.route('/')
 def page_home():
     return render_template('welcome.html')
+
+@app.route('/please_login')
+def page_please_login():
+    return render_template('please-login.html')
 
 @app.route('/logout')
 def page_logout():

@@ -4,10 +4,15 @@
 
 ```
 / : {
-  welcome.html
+    welcome.html    
 }
+
+/please_login : {
+    please_login.html
+}
+
 /login : {
-	login.html	
+	login.html
 }
 /dashboard/curriculum : {
   	dashboard-curriculum.html
@@ -37,7 +42,7 @@
 # todo
 
 email 改成 username
-
+wecolme.html 中点击登录按钮后会出现Method Not Allowed错误
 
 
 # dashboard

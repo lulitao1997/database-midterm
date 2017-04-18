@@ -37,7 +37,25 @@
 }
 ```
 
-
+# 如何运行
+1. 安装virtualenv
+``` bash
+    pip3 install virtualenv
+    cd project_folder
+    virtualenv venv
+    source venv/bin/activate
+```
+2. 安装所有依赖
+``` bash
+    pip install -r requirments.txt
+```
+3. 建立数据库及随机生成数据
+``` bash
+    # 先开启mysql
+    mysql -u root
+    # 在另一个终端里
+    python config.py
+```
 
 # todo
 

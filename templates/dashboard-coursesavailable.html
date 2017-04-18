@@ -1,6 +1,5 @@
 {% extends "dashboard-base.html" %}
 
-
 {% block dashboard_content %}
 <h2>我的课表</h2>
 <div class="table-responsive">
@@ -8,13 +7,13 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>周日</th>
-        <th>周一</th>
-        <th>周二</th>
-        <th>周三</th>
-        <th>周四</th>
-        <th>周五</th>
-        <th>周六</th>
+        <th><div style="width: 90px;">周日</div></th>
+        <th><div style="width: 90px;">周一</div></th>
+        <th><div style="width: 90px;">周二</div></th>
+        <th><div style="width: 90px;">周三</div></th>
+        <th><div style="width: 90px;">周四</div></th>
+        <th><div style="width: 90px;">周五</div></th>
+        <th><div style="width: 90px;">周六</div></th>
       </tr>
     </thead>
     <tbody>
@@ -40,8 +39,8 @@
 	  <th><div style="width: 140px;">课程名</div></th>
 	  <th><div style="width: 140px;">教师</div></th>
 	  <th><div style="width: 140px;">学分</div></th>
-	  <th><div style="width: 140px;">容量</div></th>
-	  <th><div style="width: 40px;">选项</div></th>
+	  <th><div style="width: 100px;">容量</div></th>
+	  <th><div style="width: 60px;">选项</div></th>
 	</thead>
 	<tbody>
 	  {% for cou in course %}
@@ -52,9 +51,15 @@
 		{% endfor %}
 		<th>
 			<input type="hidden" name="select" value="{{ cou.cid }}"></input>
-			<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-block btn-sm" type=submit>
+			<div class="btn-group">
+				<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-sm">
 				{%- if cou.done -%}重修{%- else -%}选课{%- endif -%}
-			</button>
+				</button>
+				<a class="btn btn-success btn-sm" href="/test/dashboard-courseinfo-{{ cou.cid }}">
+					信息
+				</a>
+			</div>
+			
 		</th>
 	  </tr>
 	  </form>
@@ -62,21 +67,19 @@
 	</tbody>
 	<table>
   <ul class="pagination justify-content-center">
-    <form method="POST">
-		<input type="hidden" name="turnpage" value=""></input>
 		<li class="page-item {% if pagenumber == 1 -%} disabled {%- endif -%}">
-		  <a class="page-link" type="submit" name="turnpage" value="past" tabindex="-1"><<</a>
+		  <a class="page-link" href="/test/dashboard-coursesavailable-{{ pagenumber - 1 }}"><<</a>
 		</li>
 		{% for i in range(pageamount) %}
-		<li class="page-item {% if pagenumber == i + 1 -%}active{%- endif -%}"><a class="page-link" type="submit" name="turnpage" value="{{ i + 1 }}"> {{ i + 1 }}</a></li>
+		<li class="page-item {% if pagenumber == i + 1 -%}active{%- endif -%}">
+			<a class="page-link" href="/test/dashboard-coursesavailable-{{ i + 1 }}">{{ i + 1 }}</a>
+		</li>
 		{% endfor %}
 		<li class="page-item {% if pagenumber == pageamount -%} disabled {%- endif -%}">
-		  <a class="page-link" type="submit" name="turnpage" value="next">>></a>
+		  <a class="page-link" href="/test/dashboard-coursesavailable-{{ pagenumber + 1 }}">>></a>
 		</li>
-    </form>
   </ul>
 <br>
-<hr>
 <br>
 <h2>检索课程</h2>
 	<table class="table table-striped table-bordered">	
@@ -103,7 +106,7 @@
 		for (var i = 1; i <= 14; i++)
 		for (var j = 1; j <= 7; j++) {
 			document.getElementById(j + '-' + i).style.background="";
-		}	
+		}
 	}
 	
 	{% for cou in course %}

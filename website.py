@@ -47,10 +47,10 @@ def page_login_post():
     psw = request.form['password']
     cursor = db.cursor()
     is_stu = False;
-    if len(id)==11:
+    if len(id)==11: # Student
         cursor.execute('select sno, psw, sname from student where sno=%s', [id])
         is_stu = True
-    else:
+    else: # Teacher
         cursor.execute('select tno, psw, tname from teacher where tno=%s', [id])
     result = cursor.fetchall()
     if len(result)==0 or psw!=result[0][1]: # TODO: change to hash
@@ -67,19 +67,44 @@ def hash(psw):
     m.update(psw.encode('utf-8'))
     return m.hexdigest
 
+COURSE_ATTR = 'cno, cname, grade, credit, capacity'
+
+def get_stu_courses(sqlcmd, argtuple): # TODO: return a iterator
+    cursor = db.cursor();
+    cursor.execute(sqlcmd, argtuple)
+    courses = list()
+    for c in cursor:
+        c2 = db.cursor()
+        c2.execute("""
+            select cnum, wnum from course_time
+            where cno=%s""", c[0])
+        cells = ['{}-{}'.format(*i) for i in c2]
+        cid = c[0].replace('.','')
+        # c is info
+        courses.append({'cid':cid, 'cells':cells, 'info':c})
+    return courses
+
+def get_stu_table():
+    cursor = db.cursor();
+    cursor.execute("""
+        select cnum, wnum, cname from course_time natural join performance natural join course
+        where sno=%s""", [g.id])
+    cnameincell = [['' for _ in range(8)] for _ in range(15)]
+    for (c,w,name) in cursor:
+        cnameincell[c][w] = name
+    return cnameincell
+
 @app.route('/dashboard-coursesavailable')
 def dashboard_coursesavailable():
-    pass
-	# computer = dict()
-	# computer['cid']=12345
-	# computer['cells'] = ['1-1','2-2','3-3']
-	# computer['info'] = ('123435', 'computer', 'wang', '1', '100')
-	# computer['done'] = True
-	# cs = { 'cid': 123, 'cells': ['1-3','4-5'], 'info': ('123', 'cs', 'wang', '1', '100'), 'done': False }
-	# course = [computer, cs]
-	# cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
-	# return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=10, course = course, cnameincell = cnameincell)
-    # return str(len(courses))
+    courses = get_stu_courses("""
+    select {} from course
+    where cno not in (
+        select cno from performance where sno=@sid
+    ) and not exists (
+        select * from course_time A, course_time B, performance C
+        where (A.wnum,A.cnum)=(B.wnum,B.cnum) and B.cno=C.cno and A.cno=course.cno and C.sno=%s
+    )""".format(COURSE_ATTR), g.id)
+    return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=10, course=courses, cnameincell=cnameincell)
 
 
 @app.route('/dashboard-coursesavailable', methods=['POST'])
@@ -94,25 +119,11 @@ def dashboard_coursesavailable_post():
 
 @app.route('/dashboard-coursespossessed')
 def page_course_possessed():
-    cursor = db.cursor();
-    cursor.execute("""
-        select distinct cno, cname, grade, credit, capacity from course natural join performance
-        where sno=%s""", g.id)
-    cno_l = cursor.fetchall()
-    courses = list()
-    cnameincell = [['' for _ in range(15)] for _ in range(8)]
-    for c in cno_l:
-        cursor.execute("""
-            select wnum, cnum from course_time
-            where cno=%s""", c[0])
-        days = cursor.fetchall()
-        cells = ['{}-{}'.format(*i) for i in days]
-        cid = c[0].replace('.','')
-        # c is info
-        courses.append({'cid':cid, 'cells':cells, 'info':c})
-        for d in days: cnameincell[d[0]][d[1]] = c[1]
-
-    return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=10, course=courses, cnameincell=cnameincell)
+    courses = get_stu_courses("""
+        select distinct {} from course natural join performance
+        where sno=%s""".format(COURSE_ATTR), [g.id])
+    return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=1, course=courses, cnameincell=get_stu_table())
+    # return str(get_stu_table())
 
 if __name__ == '__main__':
     app.run(debug=True)

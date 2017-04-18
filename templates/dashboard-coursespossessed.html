@@ -1,53 +1,81 @@
 {% extends "dashboard-base.html" %}
 
 {% block dashboard_content %}
-    <div class="table-responsive">
-		 <form method="POST"> 
-		 <table class="table table-striped table-bordered">	
-		 			<div class="row">
-		    			<div class="col-md-2"> <h3>检索课程</h3></div>
-		  		</div>
-				  <thead>
-				  <th>课程编号</th>
-				  <th>课程名</th>
-				  <th>教师</th>
-				  <th>信用度</th>
-				  <th>容量</th>
-		  		</thead>
-		  		<tbody> 
-				  <tr>
-						<th><input style="width: 150px;" type="text" class="form-control" name="cno"></th>
-						<th><input style="width: 150px;" type="text" class="form-control" name="cname"></th>
-						<th><input style="width: 150px;" type="text" class="form-control" name="tname"></th>
-						<th><input style="width: 150px;" type="text" class="form-control" name="credit"></th>
-						<th><input style="width: 150px;" type="text" class="form-control" name="capacity"></th>
-					<tr>
-					</tbody>	
-		 </table>
-		 <button class="btn btn-md btn-primary btn-block" type="submit" href="" style="display: inline-block; width: 100px">检索</button>	
-		</form>
-		<hr>
-		<table class="table table-striped table-bordered">
-		  <br>
-		  <div class="row">
-		    <div class="col-md-2"> <h3>已选课程</h3></div>
-		  </div>
-		  <thead>
-				  <th><div style="width: 150px;">课程编号</div></th>
-				  <th><div style="width: 150px;">课程名</div></th>
-				  <th><div style="width: 150px;">教师</div></th>
-				  <th><div style="width: 150px;">信用度</div></th>
-				  <th><div style="width: 150px;">容量</div></th>
-		  </thead>
-		  <tbody>  	
-		    {% for cou in course %}
-				  <tr>
-						{% for info in cou %}
-							<th>{{ info }} </th>
-						{% endfor %}
-					</tr>
-		    {% endfor %}
-		  </tbody>
-		  <table>
-      </div>
+<h2>我的课表</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th><div style="width: 90px;">周日</div></th>
+        <th><div style="width: 90px;">周一</div></th>
+        <th><div style="width: 90px;">周二</div></th>
+        <th><div style="width: 90px;">周三</div></th>
+        <th><div style="width: 90px;">周四</div></th>
+        <th><div style="width: 90px;">周五</div></th>
+        <th><div style="width: 90px;">周六</div></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ] %}
+      <tr>
+        <td>{{ j }}</td>
+        {% for i in [ 7, 1, 2, 3, 4, 5, 6 ] %}
+        <td id="{{ i }}-{{ j }}">{{ cnameincell[i][j] }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<hr>
+<br>
+<h2>已选课程</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+	<thead>
+	  <th><div style="width: 140px;">课程编号</div></th>
+	  <th><div style="width: 140px;">课程名</div></th>
+	  <th><div style="width: 140px;">教师</div></th>
+	  <th><div style="width: 140px;">学分</div></th>
+	  <th><div style="width: 140px;">容量</div></th>
+	  <th><div style="width: 40px;">选项</div></th>
+	</thead>
+	<tbody>
+	  {% for cou in course %}
+	  <form method="POST">
+	  <tr>
+		{% for info in cou.info %}
+		<th onclick="HighLightCell{{ cou.cid }}()">{{ info }} </th>
+		{% endfor %}
+		<th>
+			<input type="hidden" name="drop" value="{{ cou.cid }}"></input>
+			<button type="submit" class="btn btn-warning btn-block btn-sm" type=submit>
+				退课
+			</button>
+		</th>
+	  </tr>
+	  </form>
+	  {% endfor %}
+	</tbody>
+	<table>
+	
+<script>
+	function clear() {
+		for (var i = 1; i <= 14; i++)
+		for (var j = 1; j <= 7; j++) {
+			document.getElementById(j + '-' + i).style.background="";
+		}	
+	}
+	
+	{% for cou in course %}
+		function HighLightCell{{ cou.cid }}() {
+			clear();
+			{% for cell in cou.cells %}
+			document.getElementById("{{ cell }}").style.background="#F5DEB3";
+			{% endfor %}
+		}
+	{% endfor %}
+</script>
 {% endblock %}

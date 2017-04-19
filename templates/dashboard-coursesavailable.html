@@ -50,7 +50,7 @@
 		<th onclick="HighLightCell{{ cou.cid }}()">{{ info }} </th>
 		{% endfor %}
 		<th>
-			<input type="hidden" name="select" value="{{ cou.cid }}"></input>
+			<input type="hidden" name="select" value="{{ cou.info[0] }}"></input>
 			<div class="btn-group">
 				<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-sm">
 				{%- if cou.done -%}重修{%- else -%}选课{%- endif -%}

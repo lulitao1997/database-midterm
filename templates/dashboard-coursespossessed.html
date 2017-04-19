@@ -50,7 +50,7 @@
 		<th onclick="HighLightCell{{ cou.cid }}()">{{ info }} </th>
 		{% endfor %}
 		<th>
-			<input type="hidden" name="drop" value="{{ cou.cid }}"></input>
+			<input type="hidden" name="drop" value="{{ cou.info[0] }}"></input>
 			<div class="btn-group">
 				<button type="submit" class="btn btn-warning btn-block btn-sm" type=submit>
 					退课
@@ -71,7 +71,7 @@
 		for (var i = 1; i <= 14; i++)
 		for (var j = 1; j <= 7; j++) {
 			document.getElementById(j + '-' + i).style.background="";
-		}	
+		}
 	}
 	
 	{% for cou in course %}

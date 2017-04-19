@@ -11,16 +11,23 @@
 
 <body>
 <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
-  <button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <a class="navbar-brand" href="#">Fudan University</a>
-</nav>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">Danfu University</a>
 
-<div class="container"">
-	<br>
-	<br>
-	<br>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+		        <li class="nav-item">
+		          <a class="nav-link" href="/logout">SignOut</a>         	
+		        </li>
+        </ul>
+      </div>
+    </nav>
+<br>
+<br>
+<br>
+<div class="container"" style="transform: scale(0.9); transform-origin:50% 0%;">
 	{% block page_content %}
 	{% endblock %}
 </div>

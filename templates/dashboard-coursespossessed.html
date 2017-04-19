@@ -39,8 +39,8 @@
 	  <th><div style="width: 140px;">课程名</div></th>
 	  <th><div style="width: 140px;">教师</div></th>
 	  <th><div style="width: 140px;">学分</div></th>
-	  <th><div style="width: 140px;">容量</div></th>
-	  <th><div style="width: 40px;">选项</div></th>
+	  <th><div style="width: 100px;">容量</div></th>
+	  <th><div style="width: 60px;">选项</div></th>
 	</thead>
 	<tbody>
 	  {% for cou in course %}
@@ -51,9 +51,14 @@
 		{% endfor %}
 		<th>
 			<input type="hidden" name="drop" value="{{ cou.cid }}"></input>
-			<button type="submit" class="btn btn-warning btn-block btn-sm" type=submit>
-				退课
-			</button>
+			<div class="btn-group">
+				<button type="submit" class="btn btn-warning btn-block btn-sm" type=submit>
+					退课
+				</button>
+				<a class="btn btn-success btn-sm" href="/dashboard-courseinfo-{{ cou.cid }}">
+					信息
+				</a>
+			</div>
 		</th>
 	  </tr>
 	  </form>

@@ -55,7 +55,7 @@
 				<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-sm">
 				{%- if cou.done -%}重修{%- else -%}选课{%- endif -%}
 				</button>
-				<a class="btn btn-success btn-sm" href="/test/dashboard-courseinfo-{{ cou.cid }}">
+				<a class="btn btn-success btn-sm" href="/dashboard-courseinfo-{{ cou.cid }}">
 					信息
 				</a>
 			</div>
@@ -68,20 +68,20 @@
 	<table>
   <ul class="pagination justify-content-center">
 		<li class="page-item {% if pagenumber == 1 -%} disabled {%- endif -%}">
-		  <a class="page-link" href="/test/dashboard-coursesavailable-{{ pagenumber - 1 }}"><<</a>
+		  <a class="page-link" href="/dashboard-coursesavailable-{{ pagenumber - 1 }}"><<</a>
 		</li>
 		{% for i in range(pageamount) %}
 		<li class="page-item {% if pagenumber == i + 1 -%}active{%- endif -%}">
-			<a class="page-link" href="/test/dashboard-coursesavailable-{{ i + 1 }}">{{ i + 1 }}</a>
+			<a class="page-link" href="/dashboard-coursesavailable-{{ i + 1 }}">{{ i + 1 }}</a>
 		</li>
 		{% endfor %}
 		<li class="page-item {% if pagenumber == pageamount -%} disabled {%- endif -%}">
-		  <a class="page-link" href="/test/dashboard-coursesavailable-{{ pagenumber + 1 }}">>></a>
+		  <a class="page-link" href="/dashboard-coursesavailable-{{ pagenumber + 1 }}">>></a>
 		</li>
   </ul>
 <br>
 <br>
-<h2>检索课程</h2>
+<h2>检索课程</h2>	
 	<table class="table table-striped table-bordered">	
 	  <thead>
 		<th>课程编号</th>

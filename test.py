@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, flash, redirect, url_for, session, request
+from flask import Flask, render_template, flash, redirect, url_for, session, request, g
 from flask_wtf import Form
 from wtforms import IntegerField, SubmitField
 from wtforms.validators import Required, NumberRange
 from flask_bootstrap import Bootstrap
+import pymysql
 import jinja2
 import numpy as np
 
 app = Flask(__name__)
-app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.secret_key = 'really_strong_psw'
 
+@app.route('/')
+def page_home():
+    return render_template('welcome.html')
+    
 # 废弃
 @app.route('/dashboard-curriculum')
 def test_dashboard_curriculum():
@@ -40,7 +44,7 @@ def test_dashboard_coursesavailable(pagenumber):
 	computer = dict()
 	computer['cid']=123435
 	computer['cells'] = ['1-1','2-2','3-3']
-	computer['info'] = ('1234.35', 'computer', 'wang', '1', '100')
+	computer['info'] = ('1234.35', 'computer', u'王尔德', '1', '100')
 	computer['done'] = True
 
 	cs = {
@@ -116,7 +120,18 @@ def test_dashboard_courseinfo(cno):
 		student = student,
 		description = u'你好吗我很好' # 课程描述
 	)
-
+# dashboard-teacherinfo 教师信息
+@app.route('/dashboard-teacherinfo-<tno>')
+def test_dashboard_teacherinfo(tno):
+	teacher = { 'tname': u'王尔德', 'prof': u'教授', 'email': '233@fudan.edu.cn', 'phno': '1234567' };
+	ifedit = { 'email', 'phno' } # 一个集合，表示可以修改的栏目。
+	return render_template(
+		'dashboard-teacherinfo.html',
+		teacher = teacher,
+		sidebar_name = 'teacherinfo',
+		ifedit = ifedit
+	)
+	
 # dashboard-courses-done 已修课程
 @app.route('/dashboard-coursesdone')
 def test_dashboard_coursesdone():
@@ -133,25 +148,28 @@ def test_dashboard_coursesdone():
 			'wang',# tname
 			'1', # credit
 			'F' # grade
-		),
+		),		
 	}
 	course = [computer, cs]
 	return render_template(
 		'dashboard-coursesdone.html',
 		course = course,
+		gpa = '4.1',
+		credit = '150.5',
 		sidebar_name = 'coursesdone'
 	)
 
 @app.route('/dashboard-coursesdone', methods=['POST'])
 def test_dashboard_coursesdone_post():
 	if 'relearn' in request.form: # 请求重修
-		cno = request.form['relearn']
-		cno = cno[:-2] + '.' + cno[-2:]
-		cursor = db.cursor()
-		try:
-			cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
-			cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
-	return redirect(g.url_path)
+		#cno = request.form['relearn']	
+		#cno = cno[:-2] + '.' + cno[-2:]
+		#cursor = db.cursor()
+		#try:
+		#	cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
+		#	cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
+		return "hello"
+	
 @app.route('/welcome')
 def test_welcome():
 	return render_template('welcome.html')

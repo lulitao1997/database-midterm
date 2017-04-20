@@ -11,6 +11,10 @@ import numpy as np
 app = Flask(__name__)
 app.secret_key = 'really_strong_psw'
 
+@app.before_request
+def before_request():
+    g.username = 'Ashitaka97'
+    
 @app.route('/')
 def page_home():
     return render_template('welcome.html')

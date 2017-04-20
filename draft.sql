@@ -35,6 +35,16 @@ select wnum, cnum from course_time where cno=@cid
 select wnum, cnum from course_time natural join performance
 where sno=@sid;
 
+-- 获得教授@cid课程的所有老师名
+select group_concat(tname separator ', ')
+from teacher natural join teach_rel where cno=@cid;
+
+select cname, cno, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=A.cno) as teachers from performance natural join course as A
+where sno=@sid;
+
+-- 选取@cid课程
+insert into performance values(@sid, @cid, NULL);
+
 -- 获得@sid可以选择的所有课程(不包括重修的)
 select * from course
 where cno not in (
@@ -58,10 +68,4 @@ select distinct * from student natural join performance natural join teach_rel
 where tno=@tid
 order by cno;
 
-#include <iostream>
-using namespace std;
-int main() {
-    int a,b;
-    cin>>a>>b;
-    cout<<a+b<<endl;
-}
+select * from ( select cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=AA.cno) as teachers, credit, capacity from course as AA where cno not in ( select cno from performance where sno=@sid ) and not exists ( select * from course_time A, course_time B, performance C where (A.wnum,A.cnum)=(B.wnum,B.cnum) and B.cno=C.cno and A.cno=AA.cno and C.sno=@sid ) ) as BB where cno like '%LAWS130432.01%' limit 0, 5

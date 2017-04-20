@@ -9,9 +9,6 @@ app = Flask(__name__)
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.secret_key = 'really_strong_psw'
 db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='edu_manage')
-# def get_authed_user():
-#     return get_user(session.get('username', None))
-
 
 @app.before_request
 def before_request():
@@ -59,7 +56,7 @@ def page_login_post():
     name = result[0][2]
     session['id'] = result[0][0]
     session['name'] = name
-    flash("欢迎：" + name + u"。登入成功！", 'success')
+    flash("欢迎：" + name + "。登入成功！", 'success')
     return redirect('/')
 
 def hash(psw):
@@ -92,18 +89,6 @@ def get_stu_table():
         cnameincell[w][c] = name
     return cnameincell
 
-# @app.route('/dashboard-coursesavailable')
-# def dashboard_coursesavailable():
-#     courses = get_stu_courses("""
-#     select cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=AA.cno) as teachers, credit, capacity from course as AA
-#     where cno not in (
-#         select cno from performance where sno=@sid
-#     ) and not exists (
-#         select * from course_time A, course_time B, performance C
-#         where (A.wnum,A.cnum)=(B.wnum,B.cnum) and B.cno=C.cno and A.cno=AA.cno and C.sno=%s
-#     )""", g.id)
-#     return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=10, course=courses, cnameincell=get_stu_table())
-
 PAGE_NUM = 5
 AVAIL_STR = """
 select cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=AA.cno) as teachers, credit, capacity from course as AA
@@ -113,7 +98,6 @@ where cno not in (
     select * from course_time A, course_time B, performance C
     where (A.wnum,A.cnum)=(B.wnum,B.cnum) and B.cno=C.cno and A.cno=AA.cno and C.sno=%s
 ) """
-
 
 @app.route('/dashboard-coursesavailable-<pagenumber>')
 def dashboard_coursesavailable(pagenumber):
@@ -127,10 +111,11 @@ def dashboard_coursesavailable_post(pagenumber):
         # s = request.form['select']
         # return s
         try:
-            cursor.execute('insert into performance values(@sid, @cid, NULL)', [g.id, request.form['select']])
+            cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, request.form['select']])
             db.commit()
         except:
             db.rollback()
+        return redirect(g.url_path)
     elif 'search' in request.form:
         where_clause = ''
         for attr in ('cno', 'cname'):
@@ -159,6 +144,21 @@ def page_course_possessed():
     return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=1, course=courses, cnameincell=get_stu_table())
     # return str(get_stu_table())
 
+@app.route('/dashboard-coursespossessed', methods=['POST'])
+def test_dashboard_coursespossessed_post():
+    if 'drop' in request.form: # 请求退课
+        cno = request.form['drop'] # 得到课程编号
+        cno = cno[:-2] + '.' + cno[-2:]
+        cursor = db.cursor()
+        try:
+            cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
+            db.commit()
+        except:
+            db.rollback()
+        return redirect(g.url_path)
+    else:
+        return redirect('/')
+
 @app.route('/dashboard-courseinfo-<cid>')
 def page_courseinfo(cid):
     cursor = db.cursor()
@@ -167,12 +167,46 @@ def page_courseinfo(cid):
 
     c2 = db.cursor()
     c2.execute('select description from course where cno=%s', [cid])
-    
+
     return render_template(
         'dashboard-courseinfo.html',
         student=cursor.fetchall(),
         description=c2.fetchall()[0][0]
     )
+
+@app.route('/dashboard-coursesdone')
+def page_coursedone():
+    cursor = db.cursor()
+    cursor.execute("""
+        select AVG(grade), SUM(credit) from performance natural join course
+        where sno=%s and grade is not NULL
+        group by sno""", [g.id])
+    (avg_grad, sum_credit) = cursor.fetchall()[0]
+    cursor.execute("""
+        select distinct cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=A.cno) as teachers ,credit, grade from performance natural join course as A where sno=%s and grade is not NULL
+    """, [g.id])
+    courses = list()
+    for c in cursor:
+        courses.append({
+            'cid': c[0],
+            'info': c
+        })
+    return render_template('dashboard-coursesdone.html', course=courses, sidebar_name='coursedone')
+
+@app.info('/teacher-info-<tno>')
+def page_teacher-info(tno):
+    cursor = db.cursor()
+    cursor.execute('select * from teacher where tno=%s', [tno])
+    return render_template('teacher-info', cursor.fetchall()[0])
+
+@app.route('/teacher-manage')
+def page_teacher_manage():
+    cursor = db.cursor()
+    cursor.execute('select cno, cname from teach_rel where tno=%s', [g.id])
+    
+@app.route('/admin')
+def page_admin():
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

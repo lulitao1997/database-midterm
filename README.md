@@ -28,6 +28,32 @@
 
 # todo
 
+    教师信息页面 teacher-info-<tid> : teacher—info.html
+        包括姓名，职称，email（email可以点击 "mailto:...." 链接）, 电话
+        如果是教师登录的话，可以修改自己的email、电话
+
+    教师管理页面：
+    teacher-manage : teacher-manage.html
+
+    已修课程页面显示总学分和GPA
+
+    考虑加一个显示排名的页面
+
+    选课和退课课程页选课、退课成功后考虑加一个flash
+
+    在每个页面顶栏上显示登陆者的名字
+
+
+    不能重修的情况（如时间被占用）
+
+    数据库中课程加入教室属性
+
+    想办法高效的计算可选课程总共有多少页
+
+    Admin页面？？
+
+    写Ubuntu里如何解决MySQL的编码问题
+
 
 # dashboard
 

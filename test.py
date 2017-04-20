@@ -24,7 +24,7 @@ def test_dashboard_curriculum():
 	cnameincell = [['hellooooo' for col in range(15)] for row in range(8)]
 	return render_template(
 		'dashboard-curriculum.html',
-		course = course, 
+		course = course,
 		cnameincell = cnameincell,
 		sidebar_name = 'curriculum'
 	)
@@ -33,7 +33,7 @@ def test_dashboard_curriculum():
 @app.route('/logout')
 def test_logout():
 	return (u'你已经登出啦！你是坠棒的！')
-	
+
 # dashboard-coursesavailable 可选课程
 @app.route('/dashboard-coursesavailable-<pagenumber>') # pagenumber: 当前的的页码，作为传入参数，默认(初始)为1
 def test_dashboard_coursesavailable(pagenumber):
@@ -42,17 +42,17 @@ def test_dashboard_coursesavailable(pagenumber):
 	computer['cells'] = ['1-1','2-2','3-3']
 	computer['info'] = ('1234.35', 'computer', 'wang', '1', '100')
 	computer['done'] = True
-	
-	cs = { 
-		'cid': 123, 
-		'cells': ['1-3','4-5'], 
-		'info': ('123', 'cs', 'wang', '1', '100'), 
+
+	cs = {
+		'cid': 123,
+		'cells': ['1-3','4-5'],
+		'info': ('123', 'cs', 'wang', '1', '100'),
 		'done': False # 是否已经修过
 	}
 	course = [computer, cs]
 	cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
 	return render_template(
-		'dashboard-coursesavailable.html', 
+		'dashboard-coursesavailable.html',
 		pageamount = 10, # 所有的页码的数量
 		pagenumber = int(pagenumber), # 当前页码
 		course = course, # 传入的course，在list中使用
@@ -72,7 +72,7 @@ def test_dashboard_coursesavailable_post(pagenumber):
 		return cname
 	else: # 逻辑上应该不会出现这种情况
 		return redirect('/welcome')
-		
+
 # dashboard-coursespossessed 已选课程
 @app.route('/dashboard-coursespossessed')
 def test_dashboard_coursespossessed():
@@ -81,17 +81,17 @@ def test_dashboard_coursespossessed():
 	computer['cells'] = ['1-1','2-2','3-3']
 	computer['info'] = ('123435', 'computer', 'wang', '1', '100')
 	computer['done'] = True
-	cs = { 
-		'cid': 123, 
-		'cells': ['1-3','4-5'], 
-		'info': ('123', 'cs', 'wang', '1', '100'), 
+	cs = {
+		'cid': 123,
+		'cells': ['1-3','4-5'],
+		'info': ('123', 'cs', 'wang', '1', '100'),
 		'done': False # 是否已经修过
 	}
 	course = [computer, cs]
 	cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
 	return render_template(
-		'dashboard-coursespossessed.html', 
-		course = course, 
+		'dashboard-coursespossessed.html',
+		course = course,
 		cnameincell = cnameincell,
 		sidebar_name = 'coursespossessed'
 	)
@@ -111,12 +111,12 @@ def test_dashboard_courseinfo(cno):
 	y = ('456', 'Peng', 'ME')
 	student = [ x, y ] # 学生花名册
 	return render_template(
-		'dashboard-courseinfo.html', 
+		'dashboard-courseinfo.html',
 		sidebar_name='courseinfo', # 激活侧边栏高亮
-		student = student, 
+		student = student,
 		description = u'你好吗我很好' # 课程描述
 	)
-	
+
 # dashboard-courses-done 已修课程
 @app.route('/dashboard-coursesdone')
 def test_dashboard_coursesdone():
@@ -125,7 +125,7 @@ def test_dashboard_coursesdone():
 	computer['cells'] = ['1-1','2-2','3-3']
 	computer['info'] = ('123435', 'computer', 'wang', '1', 'A')
 	computer['done'] = True
-	cs = { 
+	cs = {
 		'cid': 12301, # cid: cno without dot
 		'info': (
 			'123.01', # cno
@@ -133,21 +133,25 @@ def test_dashboard_coursesdone():
 			'wang',# tname
 			'1', # credit
 			'F' # grade
-		), 
+		),
 	}
 	course = [computer, cs]
 	return render_template(
-		'dashboard-coursesdone.html', 
-		course = course, 
+		'dashboard-coursesdone.html',
+		course = course,
 		sidebar_name = 'coursesdone'
 	)
 
-@app.route('/dashboard-coursesdone', methods = ['POST'])
+@app.route('/dashboard-coursesdone', methods=['POST'])
 def test_dashboard_coursesdone_post():
 	if 'relearn' in request.form: # 请求重修
 		cno = request.form['relearn']
-	return (u'这句话没什么卵用')
-	
+		cno = cno[:-2] + '.' + cno[-2:]
+		cursor = db.cursor()
+		try:
+			cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
+			cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
+	return redirect(g.url_path)
 @app.route('/welcome')
 def test_welcome():
 	return render_template('welcome.html')

@@ -35,6 +35,15 @@ select wnum, cnum from course_time where cno=@cid
 select wnum, cnum from course_time natural join performance
 where sno=@sid;
 
+-- 选课
+insert into performance values(@sid, @cid, NULL)
+
+-- 退课
+delete from performance where sno=@sid and cno=@cid;
+
+-- 重修
+...
+
 -- 获得教授@cid课程的所有老师名
 select group_concat(tname separator ', ')
 from teacher natural join teach_rel where cno=@cid;

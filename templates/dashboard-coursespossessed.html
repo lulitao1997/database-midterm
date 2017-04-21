@@ -2,7 +2,6 @@
 
 {% block dashboard_content %}
 <h2>我的课表</h2>
-<div class="table-responsive">
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
@@ -27,44 +26,47 @@
       {% endfor %}
     </tbody>
   </table>
-</div>
 
 <hr>
 <br>
 <h2>已选课程</h2>
-<div class="table-responsive">
   <table class="table table-striped table-bordered">
 	<thead>
-	  <th><div style="width: 140px;">课程编号</div></th>
-	  <th><div style="width: 140px;">课程名</div></th>
-	  <th><div style="width: 140px;">教师</div></th>
-	  <th><div style="width: 140px;">学分</div></th>
-	  <th><div style="width: 100px;">容量</div></th>
-	  <th><div style="width: 60px;">选项</div></th>
+	  <th><div style="width: 120px;">课程编号</div></th>
+	  <th><div style="width: 160px;">课程名</div></th>
+	  <th><div style="width: 260px;">教师</div></th>
+	  <th><div style="width: 60px;">学分</div></th>
+	  <th><div style="width: 60px;">容量</div></th>
+	  <th><div style="width: 40px;">选项</div></th>
 	</thead>
 	<tbody>
 	  {% for cou in course %}
 	  <form method="POST">
 	  <tr>
-		{% for info in cou.info %}
-		<th onclick="HighLightCell{{ cou.cid }}()">{{ info }} </th>
-		{% endfor %}
+		<th onclick="HighLightCell{{ cou.cid }}()"><a href="/dashboard-courseinfo-{{ cou.cno }}">{{ cou.cno }}</a></th>
+		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.cname }}</th>
+		<th onclick="HighLightCell{{ cou.cid }}()">		
+			{%- for teacher in cou.teacher -%}
+				<a href="/dashboard-teacherinfo-{{ teacher.tno }}">{{ teacher.tname }}</a>
+				{%- if teacher != cou.teacher[-1] -%}
+					，
+				{%- endif -%}
+			{%- endfor -%}
+		</th>
+		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.credit }}</th>
+		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.cap }}</th>
 		<th>
-			<input type="hidden" name="drop" value="{{ cou.info[0] }}"></input>
-			<div class="btn-group">
-				<button type="submit" class="btn btn-warning btn-block btn-sm" type=submit>
-					退课
-				</button>
-				<a class="btn btn-success btn-sm" href="/dashboard-courseinfo-{{ cou.cid }}">
-					信息
-				</a>
-			</div>
+			<input type="hidden" name="select" value="{{ cou.cno }}"></input>
+			<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-sm">
+				退课
+			</button>
+			</div>		
 		</th>
 	  </tr>
 	  </form>
 	  {% endfor %}
 	</tbody>
-	<table>
+	</table>
 	
 <script>
 	function clear() {

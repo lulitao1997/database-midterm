@@ -45,19 +45,20 @@ def test_logout():
 # dashboard-coursesavailable 可选课程
 @app.route('/dashboard-coursesavailable-<pagenumber>') # pagenumber: 当前的的页码，作为传入参数，默认(初始)为1
 def test_dashboard_coursesavailable(pagenumber):
-	computer = dict()
-	computer['cid']=123435
-	computer['cells'] = ['1-1','2-2','3-3']
-	computer['info'] = ('1234.35', 'computer', u'王尔德', '1', '100')
-	computer['done'] = True
-
 	cs = {
 		'cid': 123,
 		'cells': ['1-3','4-5'],
-		'info': ('123', 'cs', 'wang', '1', '100'),
+		'cno' : '12.3',
+		'cname' : 'cs',
+		'teacher' : [
+			{ 'tno' : '123', 'tname' : u'王尔德' },
+			{ 'tno' : '456', 'tname' : u'王缺德' }
+		],
+		'credit' : '2',
+		'cap' : '100',
 		'done': False # 是否已经修过
 	}
-	course = [computer, cs]
+	course = [ cs ]
 	cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
 	return render_template(
 		'dashboard-coursesavailable.html',
@@ -84,18 +85,20 @@ def test_dashboard_coursesavailable_post(pagenumber):
 # dashboard-coursespossessed 已选课程
 @app.route('/dashboard-coursespossessed')
 def test_dashboard_coursespossessed():
-	computer = dict()
-	computer['cid'] = 12345
-	computer['cells'] = ['1-1','2-2','3-3']
-	computer['info'] = ('123435', 'computer', 'wang', '1', '100')
-	computer['done'] = True
 	cs = {
 		'cid': 123,
 		'cells': ['1-3','4-5'],
-		'info': ('123', 'cs', 'wang', '1', '100'),
+		'cno' : '12.3',
+		'cname' : 'cs',
+		'teacher' : [
+			{ 'tno' : '123', 'tname' : u'王尔德' },
+			{ 'tno' : '456', 'tname' : u'王缺德' }
+		],
+		'credit' : '2',
+		'cap' : '100',
 		'done': False # 是否已经修过
 	}
-	course = [computer, cs]
+	course = [ cs ]
 	cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
 	return render_template(
 		'dashboard-coursespossessed.html',
@@ -139,22 +142,17 @@ def test_dashboard_teacherinfo(tno):
 # dashboard-courses-done 已修课程
 @app.route('/dashboard-coursesdone')
 def test_dashboard_coursesdone():
-	computer = dict()
-	computer['cid'] = 12345
-	computer['cells'] = ['1-1','2-2','3-3']
-	computer['info'] = ('123435', 'computer', 'wang', '1', 'A')
-	computer['done'] = True
 	cs = {
-		'cid': 12301, # cid: cno without dot
-		'info': (
-			'123.01', # cno
-			'cs',  # cname
-			'wang',# tname
-			'1', # credit
-			'F' # grade
-		),		
+		'cno' : '12.3',
+		'cname' : 'cs',
+		'teacher' : [
+			{ 'tno' : '123', 'tname' : u'王尔德' },
+			{ 'tno' : '456', 'tname' : u'王缺德' }
+		],
+		'credit' : '2',
+		'grade' : 'F'		
 	}
-	course = [computer, cs]
+	course = [cs]
 	return render_template(
 		'dashboard-coursesdone.html',
 		course = course,

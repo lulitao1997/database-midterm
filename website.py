@@ -8,11 +8,11 @@ from flask_bootstrap import Bootstrap
 app = Flask(__name__)
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.secret_key = 'really_strong_psw'
-db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='edu_manage')
+db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='edu_manage', charset='utf8')
 
 @app.before_request
 def before_request():
-    g.name = session.get('name', None)
+    g.username = session.get('name', None)
     g.id = session.get('id', None)
     g.url_path = request.path
     if g.id is None and g.url_path not in {'/', '/login', '/please_login'}:
@@ -141,14 +141,13 @@ def page_course_possessed():
         select distinct cno, cname, (select group_concat(tname separator ', ')
         from teacher natural join teach_rel where cno=A.cno) as teachers, credit, capacity from course natural join performance as A
         where sno=%s""", [g.id])
-    return render_template('dashboard-coursesavailable.html', pageamount=10, pagenumber=1, course=courses, cnameincell=get_stu_table())
+    return render_template('dashboard-coursespossessed.html', pageamount=10, pagenumber=1, course=courses, cnameincell=get_stu_table())
     # return str(get_stu_table())
 
 @app.route('/dashboard-coursespossessed', methods=['POST'])
 def test_dashboard_coursespossessed_post():
     if 'drop' in request.form: # 请求退课
         cno = request.form['drop'] # 得到课程编号
-        cno = cno[:-2] + '.' + cno[-2:]
         cursor = db.cursor()
         try:
             cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
@@ -163,7 +162,7 @@ def test_dashboard_coursespossessed_post():
 def page_courseinfo(cid):
     cursor = db.cursor()
     cid = cid[:-2] + '.' + cid[-2:]
-    cursor.execute("select * from performance where cno=%s", [cid])
+    cursor.execute("select sno, sname, sex from performance natural join student where cno=%s", [cid])
 
     c2 = db.cursor()
     c2.execute('select description from course where cno=%s', [cid])
@@ -181,7 +180,10 @@ def page_coursedone():
         select AVG(grade), SUM(credit) from performance natural join course
         where sno=%s and grade is not NULL
         group by sno""", [g.id])
-    (avg_grad, sum_credit) = cursor.fetchall()[0]
+    try:
+        (avg_grad, sum_credit) = cursor.fetchall()[0]
+    except:
+        return 'Cousedone Empty!'
     cursor.execute("""
         select distinct cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=A.cno) as teachers ,credit, grade from performance natural join course as A where sno=%s and grade is not NULL
     """, [g.id])
@@ -193,8 +195,23 @@ def page_coursedone():
         })
     return render_template('dashboard-coursesdone.html', course=courses, sidebar_name='coursedone')
 
-@app.info('/teacher-info-<tno>')
-def page_teacher-info(tno):
+@app.route('/dashboard-coursesdone', methods=['POST'])
+def test_dashboard_coursesdone_post():
+    if 'relearn' in request.form: # 请求重修
+        cno = request.form['relearn']
+        cursor = db.cursor()
+        try:
+        # return str([g.id,cno])
+            cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
+            cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
+            db.commit()
+        except:
+            db.rollback()
+        return redirect(g.url_path)
+    return 'fucked!'
+
+@app.route('/teacher-info-<tno>')
+def page_teacher_info(tno):
     cursor = db.cursor()
     cursor.execute('select * from teacher where tno=%s', [tno])
     return render_template('teacher-info', cursor.fetchall()[0])
@@ -203,7 +220,7 @@ def page_teacher-info(tno):
 def page_teacher_manage():
     cursor = db.cursor()
     cursor.execute('select cno, cname from teach_rel where tno=%s', [g.id])
-    
+
 @app.route('/admin')
 def page_admin():
     pass

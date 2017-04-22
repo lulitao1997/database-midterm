@@ -42,6 +42,24 @@ def test_dashboard_curriculum():
 def test_logout():
 	return (u'你已经登出啦！你是坠棒的！')
 
+@app.route('/welcome')
+def test_welcome():
+	return render_template('welcome.html')
+
+@app.route('/welcome', methods=['POST'])
+def gologin():
+	return redirect('/login')
+
+@app.route('/login')
+def login():
+	flash(u'我来试一下flash','error')
+	return render_template('login.html')
+
+	
+#--------------------------------------------dashboard--------------------------------------------------------------------
+#这里是给学生们用的dashboard，是给学生们用的是给学生们用的是给学生们用的是给学生们用的是给学生们用的是给学生们用的是给学生们用的
+#-------------------------------------------------------------------------------------------------------------------------
+
 # dashboard-coursesavailable 可选课程
 @app.route('/dashboard-coursesavailable-<pagenumber>') # pagenumber: 当前的的页码，作为传入参数，默认(初始)为1
 def test_dashboard_coursesavailable(pagenumber):
@@ -120,18 +138,18 @@ def test_dashboard_coursespossessed_post():
 def test_dashboard_courseinfo(cno):
 	x = ('123', 'Wang', 'CS')
 	y = ('456', 'Peng', 'ME')
-	student = [ x, y ] # 学生花名册
+	student = [x, y] # 学生花名册，如果想隐藏，可赋值为None
 	return render_template(
 		'dashboard-courseinfo.html',
 		sidebar_name='courseinfo', # 激活侧边栏高亮
-		student = student,
+		student = None,
 		description = u'你好吗我很好' # 课程描述
 	)
 # dashboard-teacherinfo 教师信息
 @app.route('/dashboard-teacherinfo-<tno>')
 def test_dashboard_teacherinfo(tno):
 	teacher = { 'tname': u'王尔德', 'prof': u'教授', 'email': '233@fudan.edu.cn', 'phno': '1234567' };
-	ifedit = { 'email', 'phno' } # 一个集合，表示可以修改的栏目。
+	ifedit = {} # 一个集合，表示可以修改的栏目，默认学生不能修改。
 	return render_template(
 		'dashboard-teacherinfo.html',
 		teacher = teacher,
@@ -172,17 +190,73 @@ def test_dashboard_coursesdone_post():
 		#	cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
 		return "hello"
 	
-@app.route('/welcome')
-def test_welcome():
-	return render_template('welcome.html')
+#--------------------------------------------tdashboard-------------------------------------------------------------------
+#这里是给老师们用的dashboard，是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的
+#-------------------------------------------------------------------------------------------------------------------------
 
-@app.route('/welcome', methods=['POST'])
-def gologin():
-	return redirect('/login')
+#我的信息
+@app.route('/tdashboard-coursespossessed') 
+def test_tdashboard_coursespossessed():
+	cs = {
+		'cid': 123,
+		'cells': ['1-3','4-5'],
+		'cno' : '12.3',
+		'cname' : 'cs',
+		'teacher' : [
+			{ 'tno' : '123', 'tname' : u'王尔德' },
+			{ 'tno' : '456', 'tname' : u'王缺德' }
+		],
+		'credit' : '2',
+		'cap' : '100',
+	}
+	course = [ cs ]
+	cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
+	return render_template (
+		'tdashboard-coursespossessed.html', 
+		course = course, 
+		cnameincell = cnameincell,
+		sidebar_name = 'coursespossessed'
+	)
 
-@app.route('/login')
-def login():
-	flash(u'我来试一下flash','error')
-	return render_template('login.html')
+
+#课程信息
+@app.route('/tdashboard-courseinfo-<cno>')
+def test_tdashboard_coursesinfo(cno):
+	x = { 'sno' : '123', 'sname' : 'Wang', 'sex' : 'M' }
+	y = { 'sno' : '456', 'sname' : 'Peng', 'sex' : 'F' }
+	student = [ x, y ] # 学生花名册
+	return render_template(
+		'tdashboard-courseinfo.html',
+		sidebar_name='courseinfo', # 激活侧边栏高亮
+		student = student,
+		description = u'你好吗我很好' # 课程描述
+	)
+	
+@app.route('/tdashboard-courseinfo-<cno>', methods=['POST'])
+def test_tdashboard_coursesinfo_post(cno):
+	if 'drop' in request.form:
+		return (u'听说你想踢掉我(%s)？那你还是太naive了'%request.form['drop'])
+
+
+#教师信息	
+@app.route('/tdashboard-teacherinfo-<tno>')
+def test_tdashboard_teacherinfo(tno):
+	teacher = { 'tname': u'王尔德', 'prof': u'教授', 'email': '233@fudan.edu.cn', 'phno': '1234567' };
+	ifedit = { 'email', 'phno' } # 一个集合，表示可以修改的栏目。
+	return render_template(
+		'dashboard-teacherinfo.html',
+		teacher = teacher,
+		sidebar_name = 'teacherinfo',
+		ifedit = ifedit
+	)
+
+@app.route('/tdashboard-teacherinfo-<tno>', methods = ['POST']) 
+def test_tdashboard_teacherinfo_post(tno): 
+	if 'editemail' in request.form:
+		return u'想修改成%s？你想多啦！'%request.form['email']
+	elif 'editphno' in request.form:
+		return u'想修改成%s？你想多啦！'%request.form['phno']
+		
+#---------------------------------------------------------------------------------------------------
 
 app.run(debug = True)

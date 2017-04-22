@@ -1,0 +1,35 @@
+{% extends "tdashboard-base.html" %}
+
+{% block dashboard_content %}
+
+<h2>课程描述</h2>
+<br>
+<p style="font-size: 20px;">{{ description }}</p>
+<br>
+{% if student != None %}
+<h2>花名册</h2>
+<br>
+<form method="POST">
+	<table class="table table-striped table-bordered">
+		<thead>
+			<tr>
+				<th><div style="width:230px;">学号</div></th>
+				<th><div style="width:230px;">姓名</div></th>
+				<th><div style="width:230px;">性别</div></th>
+				<th><div style="width:40px;">选项</div></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for stu in student %}
+			<tr>
+				<th>{{ stu.sno }}</th>
+				<th>{{ stu.sname }}</th>
+				<th>{{ stu.sex }}</th>
+				<th><button type="submit" class="btn btn-sm btn-primary" name="drop" value="{{ stu.sno }}">移除</button></th>
+			</tr>	
+			{% endfor %}
+		</tbody>
+	</table>
+</form>
+{% endif %}
+{% endblock %}

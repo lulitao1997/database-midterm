@@ -6,7 +6,7 @@ from wtforms.validators import Required, NumberRange
 from flask_bootstrap import Bootstrap
 import pymysql
 import jinja2
-import numpy as np
+#import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'really_strong_psw'
@@ -244,7 +244,7 @@ def test_tdashboard_teacherinfo(tno):
 	teacher = { 'tname': u'王尔德', 'prof': u'教授', 'email': '233@fudan.edu.cn', 'phno': '1234567' };
 	ifedit = { 'email', 'phno' } # 一个集合，表示可以修改的栏目。
 	return render_template(
-		'dashboard-teacherinfo.html',
+		'tdashboard-teacherinfo.html',
 		teacher = teacher,
 		sidebar_name = 'teacherinfo',
 		ifedit = ifedit

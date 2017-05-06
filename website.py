@@ -89,6 +89,7 @@ def get_courses(sqlcmd, argtuple=None, columnname=None, hascells=True): # TODO: 
                     where cno=%s""", cou["cno"])
                 cou["cells"] = ['{}-{}'.format(*i) for i in c2]
             cou["teacher"] = [j for j in run_sql("select tno, tname from teacher natural join teach_rel where cno=%s", cou["cno"], ["tno", "tname"])]
+            cou["cid"] = cou["cno"].replace('.','_')
         # print(str(cou["cells"]))
         courses.append(cou)
     return courses

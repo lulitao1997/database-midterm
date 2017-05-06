@@ -10,7 +10,7 @@ app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.secret_key = 'really_strong_psw'
 db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', database='edu_manage', charset='utf8')
 
-page_stu = {'/dashboard-courseinfo', '/dashboard-coursespossessed', '/dashboard-teacherinfo', '/dashboard-coursesavailable', '/dashboard-courses-done'}
+# page_stu = {'/dashboard-courseinfo', '/dashboard-coursespossessed', '/dashboard-teacherinfo', '/dashboard-coursesavailable', '/dashboard-courses-done'}
 page_teacher = {'/tdashboard-courseinfo', '/tdashboard-teacherinfo', '/tdashboard-coursespossessed'}
 @app.before_request
 def before_request():
@@ -58,7 +58,7 @@ def page_login_post():
     else: # Teacher
         cursor.execute('select tno, psw, tname from teacher where tno=%s', [id])
     result = cursor.fetchall()
-    if len(result)==0 or psw!=result[0][1]: # TODO: change to hash
+    if len(result)==0 or hash(id+psw)!=result[0][1]: # TODO: change to hash
         flash('用户名或密码错误', 'error')
         return redirect('/login')
     name = result[0][2]
@@ -71,7 +71,7 @@ def page_login_post():
 def hash(psw):
     m = hashlib.sha256()
     m.update(psw.encode('utf-8'))
-    return m.hexdigest
+    return m.hexdigest()
 
 def run_sql(sqlcmd, argtuple=None, columnname=None):
     ans = list()
@@ -233,7 +233,6 @@ def test_dashboard_coursesdone_post():
         cno = request.form['relearn']
         cursor = db.cursor()
         try:
-        # return str([g.id,cno])
             cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
             cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
             db.commit()
@@ -266,26 +265,6 @@ def get_teacher_table():
     return cnameincell
 @app.route('/tdashboard-coursespossessed')
 def tdashboard_coursespossessed():
-    # cs = {
-    #     'cid': 123,
-    #     'cells': ['1-3','4-5'],
-    #     'cno' : '12.3',
-    #     'cname' : 'cs',
-    #     'teacher' : [
-    #         { 'tno' : '123', 'tname' : u'王尔德' },
-    #         { 'tno' : '456', 'tname' : u'王缺德' }
-    #     ],
-    #     'credit' : '2',
-    #     'cap' : '100',
-    # }
-    # course = [ cs ]
-    # cnameincell = [['hellooooooo' for col in range(15)] for row in range(8)]
-    # return render_template (
-    #     'tdashboard-coursespossessed.html',
-    #     course = course,
-    #     cnameincell = cnameincell,
-    #     sidebar_name = 'coursespossessed'
-    # )
     courses = get_courses("""
         select cno, cname, credit, capacity from course natural join teach_rel as A
         where tno=%s""", [g.id], ["cno", "cname", "credit", "cap"])
@@ -337,7 +316,7 @@ def tdashboard_coursesinfo_post(cno):
 
 @app.route('/tdashboard-teacherinfo')
 def tdashboard_teacherinfo():
-    it = run_sql("select tname, prof from teacher where tno=%s", [g.id], ["tname", "prof"])
+    it = run_sql("select tname, prof, email, tel from teacher where tno=%s", [g.id], ["tname", "prof", "email", "phno"])
     ifedit = { 'email', 'phno' } # 一个集合，表示可以修改的栏目。
     return render_template(
         'tdashboard-teacherinfo.html',
@@ -348,20 +327,17 @@ def tdashboard_teacherinfo():
 
 @app.route('/tdashboard-teacherinfo', methods = ['POST'])
 def tdashboard_teacherinfo_post():
-    if 'editemail' in request.form:
-        with db.cursor() as c:
-            try:
-                c.execute("update teacher set email=%s where tno=%s",[request.form("email"), g.id])
-                db.commit()
-            except:
-                db.rollback()
-    elif 'editphno' in request.form:
-        with db.cursor() as c:
-            try:
-                c.execute("update teacher set tel=%s where tno=%s",[request.form("phno"), g.id])
-                db.commit()
-            except:
-                db.rollback()
+    print(str(request.form))
+    with db.cursor() as c:
+        try:
+            if 'editemail' in request.form:
+                c.execute("update teacher set email=%s where tno=%s",[request.form["email"], g.id])
+            if 'editphno' in request.form:
+                c.execute("update teacher set tel=%s where tno=%s",[request.form["phno"], g.id])
+            db.commit()
+        except:
+            db.rollback()
+            flash("输入的信息有误",'error')
     return redirect(g.url_path)
 
 if __name__ == '__main__':

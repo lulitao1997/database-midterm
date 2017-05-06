@@ -3,29 +3,7 @@
 {% block page_content %}
 <div class="jumbotron">
   <div class="container" style="width: 300px;">
-    {% with errors = get_flashed_messages(category_filter=["error"]) %}
-  		{% if errors %}
-  			<div class="alert alert-danger" role="alert" style="text-align: center;">
-					{% for msg in errors %}
-						{{ msg }}
-						<br>
-					{% endfor %}
-				</div>
-			<br>
-  		{% endif %}		
-  	{% endwith %}
-  	
-  	{% with successes = get_flashed_messages(category_filter=["success"]) %}
-			{% if successes %}
-					<div class="alert alert-success" role="alert" style="text-align: center;">
-						{% for msg in successes %}
-							{{ msg }}
-							<br>
-						{% endfor %}
-					</div>
-				<br>
-			{% endif %}
-  	{% endwith %}
+
     <form class="form-signin" method="POST">
       <h2 class="form-signin-heading" style="text-align: center;">登录</h2>
       <br>

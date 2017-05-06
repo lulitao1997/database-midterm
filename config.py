@@ -4,9 +4,10 @@ from random_words import *
 from itertools import product
 import pymysql
 import string
+import hashlib
 
 rw = RandomWords()
-db = pymysql.connect(host='localhost', port=3306, password="", user='root', database='edu_manage', charset='utf8')
+db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', charset='utf8')
 
 last_name = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许',
 '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜', '戚', '谢', '邹', '喻', '柏', '水', '窦', '章',
@@ -38,7 +39,12 @@ def rand_tno():
     return n
 
 def rand_teacher():
-    return (rand_tno(), rand_name(), choice(['M','F']), choice(['Professor', 'Lecturer']), rand_str(8))
+    tno = rand_tno()
+    psw = rand_str(8)
+    with db.cursor() as c:
+        c.execute("insert into userinfo VALUES(%s, %s)", [tno, psw])
+        db.commit()
+    return (tno, rand_name(), choice(['M','F']), choice(['Professor', 'Lecturer']), None, None, hash(tno+psw))
 
 major_n = ['713', '710']
 scnt = dict()
@@ -53,8 +59,18 @@ def rand_sno():
     sno_s.add(sno)
     return sno
 
+def hash(psw):
+    m = hashlib.sha256()
+    m.update(psw.encode('utf-8'))
+    return m.hexdigest()
+
 def rand_stu():
-    return (rand_sno(), rand_name(), choice(['M','F']), rand_str(8))
+    sno = rand_sno()
+    psw = rand_str(8)
+    with db.cursor() as c:
+        c.execute("insert into userinfo VALUES(%s, %s)", [sno, psw])
+        db.commit()
+    return (sno, rand_name(), choice(['M','F']), hash(sno+psw))
 
 course_code = ['COMP', 'PEDU', 'INFO', 'LAWS']
 ccnt = dict()
@@ -109,17 +125,17 @@ def gen_data():
         for j in gen_ctime(i[0]):
             ctime_l.append(j)
     # print(gen_sql('teach_rel', teach_rel_l))
-    try:
-        cursor = db.cursor()
-        cursor.execute(gen_sql('student', stu_l))
-        cursor.execute(gen_sql('course', course_l))
-        cursor.execute(gen_sql('teacher', teacher_l))
-        cursor.execute(gen_sql('performance', performance_l))
-        cursor.execute(gen_sql('teach_rel', teach_rel_l))
-        cursor.execute(gen_sql('course_time', ctime_l))
-        db.commit()
-    except:
-        db.rollback()
+    # try:
+    cursor = db.cursor()
+    cursor.execute(gen_sql('student', stu_l))
+    cursor.execute(gen_sql('course', course_l))
+    cursor.execute(gen_sql('teacher', teacher_l))
+    cursor.execute(gen_sql('performance', performance_l))
+    cursor.execute(gen_sql('teach_rel', teach_rel_l))
+    cursor.execute(gen_sql('course_time', ctime_l))
+    db.commit()
+    # except:
+    #     db.rollback()
 
 def reset():
     with open('schema.sql', 'r') as f:

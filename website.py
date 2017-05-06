@@ -226,20 +226,20 @@ def page_coursedone():
 #         })
 #     return render_template('dashboard-coursesdone.html', course=courses, sidebar_name='coursedone')
 #
-# @app.route('/dashboard-coursesdone', methods=['POST'])
-# def test_dashboard_coursesdone_post():
-#     if 'relearn' in request.form: # 请求重修
-#         cno = request.form['relearn']
-#         cursor = db.cursor()
-#         try:
-#         # return str([g.id,cno])
-#             cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
-#             cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
-#             db.commit()
-#         except:
-#             db.rollback()
-#         return redirect(g.url_path)
-#     return 'fucked!'
+@app.route('/dashboard-coursesdone', methods=['POST'])
+def test_dashboard_coursesdone_post():
+    if 'relearn' in request.form: # 请求重修
+        cno = request.form['relearn']
+        cursor = db.cursor()
+        try:
+        # return str([g.id,cno])
+            cursor.execute('delete from performance where sno=%s and cno=%s', [g.id, cno])
+            cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
+            db.commit()
+        except:
+            db.rollback()
+        return redirect(g.url_path)
+    return 'fucked!'
 
 @app.route('/dashboard-teacherinfo-<tno>')
 def page_teacher_info(tno):

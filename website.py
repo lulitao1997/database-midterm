@@ -18,8 +18,9 @@ def before_request():
     g.id = session.get('id', None)
     g.url_path = request.path
     g.is_stu = session.get('is_stu', None)
+    print("URL is: " + g.url_path)
     if g.id is None and g.url_path not in {'/', '/login', '/please_login'}:
-        return redirect('/please_login')
+        return redirect('/login')
     # if g.url_path!='/' and g.is_stu and g.url_path not in page_stu or not g.is_stu and g.url_path not in page_teacher:
     #     return redirect('/')
 
@@ -308,12 +309,13 @@ def tdashboard_coursesinfo(cno):
     return render_template(
         'tdashboard-courseinfo.html',
         sidebar_name='courseinfo', # 激活侧边栏高亮
-        student = run_sql("select sno, sname, sex from student natural join performance where cno=%s", [cno], ["sno", "sname", "sex"]),
+        student = run_sql("select sno, sname, sex, grade from student natural join performance where cno=%s", [cno], ["sno", "sname", "sex", "grade"]),
         description = description# 课程描述
     )
 
 @app.route('/tdashboard-courseinfo-<cno>', methods=['POST'])
 def tdashboard_coursesinfo_post(cno):
+    print(str(request.form))
     with db.cursor() as c:
         if 'drop' in request.form:
             try:
@@ -322,8 +324,15 @@ def tdashboard_coursesinfo_post(cno):
             except:
                 db.rollback()
             # return (u'听说你想踢掉我(%s)？那你还是太naive了'%request.form['drop'])
-        elif 'edit' in reque.form:
-            pass
+        elif 'update' in request.form:
+            # try:
+            for sno in request.form:
+                if len(sno)==11:
+                    c.execute("update performance set grade=%s where sno=%s and cno=%s", [request.form[sno], sno, cno])
+            db.commit()
+            # except:
+                # db.rollback()
+                # flash("输入的分数有误")
     return redirect(g.url_path)
 
 @app.route('/tdashboard-teacherinfo')

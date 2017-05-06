@@ -325,14 +325,14 @@ def tdashboard_coursesinfo_post(cno):
                 db.rollback()
             # return (u'听说你想踢掉我(%s)？那你还是太naive了'%request.form['drop'])
         elif 'update' in request.form:
-            # try:
-            for sno in request.form:
-                if len(sno)==11:
-                    c.execute("update performance set grade=%s where sno=%s and cno=%s", [request.form[sno], sno, cno])
-            db.commit()
-            # except:
-                # db.rollback()
-                # flash("输入的分数有误")
+            try:
+                for sno in request.form:
+                    if len(sno)==11:
+                        c.execute("update performance set grade=%s where sno=%s and cno=%s", [request.form[sno], sno, cno])
+                db.commit()
+            except:
+                db.rollback()
+                flash("输入的分数有误", 'error')
     return redirect(g.url_path)
 
 @app.route('/tdashboard-teacherinfo')

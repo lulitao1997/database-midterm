@@ -34,6 +34,31 @@
 <br>
 <br>
 <br>
+
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+        <div class="alert alert-danger" role="alert" style="text-align: center;">
+                {% for msg in errors %}
+                    {{ msg }}
+                    <br>
+                {% endfor %}
+            </div>
+        <br>
+    {% endif %}
+{% endwith %}
+
+{% with successes = get_flashed_messages(category_filter=["success"]) %}
+        {% if successes %}
+                <div class="alert alert-success" role="alert" style="text-align: center;">
+                    {% for msg in successes %}
+                        {{ msg }}
+                        <br>
+                    {% endfor %}
+                </div>
+            <br>
+        {% endif %}
+{% endwith %}
+
 <div class="container" style="transform: scale(0.9); transform-origin:50% 0%;">
 	{% block page_content %}
 	{% endblock %}
@@ -45,5 +70,6 @@
 		<p> @Lucio </p>
 	</footer>
 </div>
+
 </body></html>
 {% endblock %}

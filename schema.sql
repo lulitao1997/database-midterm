@@ -7,6 +7,8 @@ create table teacher (
     tname   char(30)    not null,
     sex     char(1),
     prof    char(10), -- job title
+    email   char(20),
+    tel     char(20),
     psw     char(40), -- sha-1
     primary key(tno)
 );
@@ -51,3 +53,4 @@ create table performance (
     foreign key(sno) references student(sno),
     foreign key(cno) references course(cno)
 );
+-- 以上table均为一个学期之内的，每当一个新的学期开始的时候，管理员需要清空performance并且将teach_rel和course和course_time修改为新学期的相应table

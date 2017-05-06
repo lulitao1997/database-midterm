@@ -45,7 +45,7 @@
 	  <tr>
 		<th onclick="HighLightCell{{ cou.cid }}()"><a href="/dashboard-courseinfo-{{ cou.cno }}">{{ cou.cno }}</a></th>
 		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.cname }}</th>
-		<th onclick="HighLightCell{{ cou.cid }}()">		
+		<th onclick="HighLightCell{{ cou.cid }}()">
 			{%- for teacher in cou.teacher -%}
 				<a href="/dashboard-teacherinfo-{{ teacher.tno }}">{{ teacher.tname }}</a>
 				{%- if teacher != cou.teacher[-1] -%}
@@ -56,18 +56,18 @@
 		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.credit }}</th>
 		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.cap }}</th>
 		<th>
-			<input type="hidden" name="select" value="{{ cou.cno }}"></input>
+			<input type="hidden" name="drop" value="{{ cou.cno }}"></input>
 			<button type="submit" class="btn btn-{%- if cou.done -%}warning{%- else -%}primary{% endif %} btn-sm">
 				退课
 			</button>
-			</div>		
+			</div>
 		</th>
 	  </tr>
 	  </form>
 	  {% endfor %}
 	</tbody>
 	</table>
-	
+
 <script>
 	function clear() {
 		for (var i = 1; i <= 14; i++)
@@ -75,7 +75,7 @@
 			document.getElementById(j + '-' + i).style.background="";
 		}
 	}
-	
+
 	{% for cou in course %}
 		function HighLightCell{{ cou.cid }}() {
 			clear();

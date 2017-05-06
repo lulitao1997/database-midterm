@@ -46,7 +46,7 @@
 		<th onclick="HighLightCell{{ cou.cid }}()"> {{ cou.cname }} </th>
 		<th onclick="HighLightCell{{ cou.cid }}()">
 			{%- for teacher in cou.teacher -%}
-				<a href="/tdashboard-teacherinfo-{{ teacher.tno }}">{{ teacher.tname }}</a>
+				<a href="/dashboard-teacherinfo-{{ teacher.tno }}">{{ teacher.tname }}</a>
 				{%- if teacher != cou.teacher[-1] -%}
 					，
 				{%- endif -%}
@@ -59,7 +59,7 @@
 	  {% endfor %}
 	</tbody>
 	</table>
-	
+
 <script>
 	function clear() {
 		for (var i = 1; i <= 14; i++)
@@ -67,7 +67,7 @@
 			document.getElementById(j + '-' + i).style.background="";
 		}
 	}
-	
+
 	{% for cou in course %}
 		function HighLightCell{{ cou.cid }}() {
 			clear();

@@ -62,3 +62,35 @@ create table userinfo (
     primary key(id)
 );
 -- for test
+
+-- Roll
+create table past_course (
+    cno         char(13)    not null, -- like ECON130005.01
+    cname       char(30)    not null,
+    credit      smallint    not null,
+    capacity    smallint    not null,
+    description text,
+    stime       char(10)    default NULL
+    -- 可能相同的
+);
+
+create table past_teach_rel (
+    tno     char(5)     not null,
+    cno     char(13)    not null,
+    stime   char(10)    default NULL
+);
+
+create table past_course_time (
+    cno     char(13)    not null,
+    -- wcnt    smallint    not null, -- week count
+    wnum    smallint    not null, -- 1~7, Monday~Sunday
+    cnum    smallint    not null, -- course count 1~14
+    stime   char(10)    default NULL
+);
+
+create table past_performance (
+    sno     char(11)    not null,
+    cno     char(13)    not null,
+    grade   decimal(4,1),
+    stime   char(10)    default NULL
+);

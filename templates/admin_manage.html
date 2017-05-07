@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<h2>管理员</h2>
+  <h3>目前学期：{{ semester }} </h3>
+  将目前的学期数据归档，并导入下一个学期的课程及成绩数据:
+  <form method="post">
+    <button type="submit" class="btn btn-warning btn-lg">确定</button>
+  </form>
+
+<hr>
+<br>
+{% endblock %}

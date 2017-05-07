@@ -78,3 +78,17 @@ where tno=@tid
 order by cno;
 
 select * from ( select cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=AA.cno) as teachers, credit, capacity from course as AA where cno not in ( select cno from performance where sno=@sid ) and not exists ( select * from course_time A, course_time B, performance C where (A.wnum,A.cnum)=(B.wnum,B.cnum) and B.cno=C.cno and A.cno=AA.cno and C.sno=@sid ) ) as BB where cno like '%LAWS130432.01%' limit 0, 5
+
+-- 归档数据
+insert into past_course select * from course
+insert into past_course_time select * from course_time
+insert into past_performance select * from performance
+insert into past_teach_rel select * from teach_rel
+update past_course set stime=%s where stime is NULL
+update past_course_time set stime=%s where stime is NULL
+update past_performance set stime=%s where stime is NULL
+update past_teach_rel set stime=%s where stime is NULL
+delete from course
+delete from course_time
+delete from performance
+delete from teach_rel

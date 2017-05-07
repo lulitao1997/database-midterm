@@ -1,0 +1,41 @@
+{% extends "dashboard-base.html" %}
+
+{% block dashboard_content %}
+<h2>排名</h2>
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <!-- <th>#</th> -->
+        <th><div style="width: 90px;">排名</div></th>
+        <th><div style="width: 90px;">学号</div></th>
+        <th><div style="width: 90px;">姓名</div></th>
+        <th><div style="width: 90px;">GPA</div></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stu in students %}
+      <tr>
+        <th> {{ stu.rank }} </th>
+        <th> {{ stu.sno }} </th>
+        <th> {{ stu.sname }} </th>
+        <th> {{ stu.gpa }} </th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <ul class="pagination justify-content-center">
+		<li class="page-item {% if pagenumber == 1 -%} disabled {%- endif -%}">
+		  <a class="page-link" href="/dashboard-sturank-{{ pagenumber - 1 }}"><<</a>
+		</li>
+		{% for i in range(pageamount) %}
+		<li class="page-item {% if pagenumber == i + 1 -%}active{%- endif -%}">
+			<a class="page-link" href="/dashboard-sturank-{{ i + 1 }}">{{ i + 1 }}</a>
+		</li>
+		{% endfor %}
+		<li class="page-item {% if pagenumber == pageamount -%} disabled {%- endif -%}">
+		  <a class="page-link" href="/dashboard-sturank-{{ pagenumber + 1 }}">>></a>
+		</li>
+  </ul>
+<hr>
+<br>
+{% endblock %}

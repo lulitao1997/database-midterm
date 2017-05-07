@@ -19,7 +19,7 @@ def before_request():
     g.url_path = request.path
     g.is_stu = session.get('is_stu', None)
     print("URL is: " + g.url_path)
-    if g.id is None and g.url_path not in {'/', '/login', '/please_login'}:
+    if g.id is None and g.url_path not in {'/', '/login', '/please_login', '/adminlogin'}:
         return redirect('/login')
     # if g.url_path!='/' and g.is_stu and g.url_path not in page_stu or not g.is_stu and g.url_path not in page_teacher:
     #     return redirect('/')
@@ -27,8 +27,9 @@ def before_request():
 @app.route('/')
 def page_home():
     if g.is_stu: return redirect('dashboard-coursespossessed')
-    elif g.id: return redirect('tdashboard-coursespossessed')
-    return render_template('welcome.html')
+    elif g.id not in ADMIN_ACCOUNT: return redirect('tdashboard-coursespossessed')
+    elif g.id is not NULL: return redirect('/admin_manage')
+    else: return render_template('welcome.html')
 
 @app.route('/please_login')
 def page_please_login():
@@ -68,6 +69,43 @@ def page_login_post():
     flash("欢迎：" + name + "。登入成功！", 'success')
     return redirect('/')
 
+@app.route('/adminlogin')
+def page_adminlogin():
+    return render_template('adminlogin.html')
+
+ADMIN_ACCOUNT = {"admin":"123456"}
+
+@app.route('/adminlogin', methods=['POST'])
+def page_adminlogin_post():
+    id = request.form['username']
+    psw = request.form['password']
+
+    if id not in ADMIN_ACCOUNT or ADMIN_ACCOUNT[id]!=psw: # TODO: change to hash
+        flash('用户名或密码错误', 'error')
+        return redirect('/adminlogin')
+    session['id'] = id
+    session['name'] = 'admin'
+    flash("欢迎：admin" + "。登入成功！", 'success')
+    return redirect('/admin_manage')
+
+SEMESTER = 2016
+
+@app.route('/admin_manage')
+def page_admin_manage():
+    return render_template('/admin_manage.html', semester=SEMESTER)
+
+
+from roll import roll
+@app.route('/admin_manage', methods=['POST'])
+def page_admin_manage_post():
+    global SEMESTER
+    SEMESTER = SEMESTER+1
+    if roll(db, SEMESTER) < 0:
+        flash("归档数据时出现错误","error")
+    else:
+        flash("归档以及导入新学期成功，已经进入下一个学期",'success')
+    return render_template('/admin_manage.html', semester=SEMESTER)
+
 def hash(psw):
     m = hashlib.sha256()
     m.update(psw.encode('utf-8'))
@@ -105,7 +143,7 @@ def get_stu_table():
         cnameincell[w][c] = name
     return cnameincell
 
-PAGE_NUM = 5
+PAGE_NUM = 10
 AVAIL_STR = """
 select cno, cname, credit, capacity from course as AA
 where cno not in (
@@ -206,29 +244,8 @@ def page_coursedone():
         credit = sum_credit,
         sidebar_name = 'coursesdone'
     )
-    #     """, [g.id])
-#     cursor = db.cursor()
-#     cursor.execute("""
-#         select AVG(grade), SUM(credit) from performance natural join course
-#         where sno=%s and grade is not NULL
-#         group by sno""", [g.id])
-#     try:
-#         (avg_grad, sum_credit) = cursor.fetchall()[0]
-#     except:
-#         return 'Cousedone Empty!'
-#     cursor.execute("""
-#         select distinct cno, cname, (select group_concat(tname separator ', ') from teacher natural join teach_rel where cno=A.cno) as teachers ,credit, grade from performance natural join course as A where sno=%s and grade is not NULL
-#     """, [g.id])
-#     courses = list()
-#     for c in cursor:
-#         courses.append({
-#             'cid': c[0],
-#             'info': c
-#         })
-#     return render_template('dashboard-coursesdone.html', course=courses, sidebar_name='coursedone')
-#
 @app.route('/dashboard-coursesdone', methods=['POST'])
-def test_dashboard_coursesdone_post():
+def dashboard_coursesdone_post():
     if 'relearn' in request.form: # 请求重修
         cno = request.form['relearn']
         cursor = db.cursor()
@@ -250,6 +267,49 @@ def page_teacher_info(tno):
         sidebar_name = 'teacherinfo',
         ifedit = dict()
     )
+
+def get_sturnk():
+    it = run_sql("""select sno, sname, SUM(credit*grade)/SUM(credit) as gpa
+    from student natural join performance natural join course
+    group by sno
+    having gpa is not NULL
+    order by gpa DESC
+    """, None, ["sno", "sname", "gpa"])
+    # return str([stu for stu in it])
+    stunum = 0
+    rnk = 0
+    students = list()
+    prev_gpa = -1
+    pos = 0
+    for stu in it:
+        if prev_gpa != float(stu["gpa"]):
+            prev_gpa = float(stu["gpa"])
+            rnk = rnk+1
+        stu["rank"] = rnk
+        if stu["sno"]!=g.id:
+            stu["sno"]="**********"
+            stu["sname"]="***"
+        else: pos = stunum
+        students.append(stu)
+        stunum = stunum+1
+    return (pos, stunum, students)
+
+
+@app.route('/dashboard-sturank-<pagenumber>')
+def page_sturank(pagenumber):
+    (pos, stunum, students) = get_sturnk()
+    pagenumber = int(pagenumber)
+    return render_template("dashboard-sturank.html",
+           sidebar_name='sturank',
+           pageamount=int(stunum/PAGE_NUM),
+           pagenumber=pagenumber,
+           students = students[(pagenumber-1)*PAGE_NUM:pagenumber*PAGE_NUM])
+
+@app.route('/dashboard-sturank')
+def page_sturank_default():
+    pos = get_sturnk()[0]
+    # return str(get_sturnk()[1])
+    return page_sturank(pos / PAGE_NUM + 1)
 
 #--------------------------------------------tdashboard-------------------------------------------------------------------
 #这里是给老师们用的dashboard，是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的是给老师们用的
@@ -340,5 +400,8 @@ def tdashboard_teacherinfo_post():
             flash("输入的信息有误",'error')
     return redirect(g.url_path)
 
+from config import *
+
 if __name__ == '__main__':
+    reset()
     app.run(debug=True)

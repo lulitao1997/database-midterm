@@ -114,10 +114,14 @@ def gen_sql(table, L):
         cmd += '\n'+str(i).replace('None','NULL')+','
     return cmd[:-1]+';'
 
-def gen_data():
-    stu_l = [rand_stu() for i in range(100)]
+def gen_data(cursor, roll=False):
+    global cno_s
+    if not roll:
+        stu_l = [rand_stu() for i in range(100)]
+        teacher_l = [rand_teacher() for i in range(20)]
+    else:
+        cno_s = set()
     course_l = [rand_course() for i in range(15)]
-    teacher_l = [rand_teacher() for i in range(20)]
     performance_l = [rand_performance() for i in range(200)]
     teach_rel_l = sample(list(product(list(tno_s), list(cno_s))), 20)
     ctime_l = list()
@@ -126,14 +130,13 @@ def gen_data():
             ctime_l.append(j)
     # print(gen_sql('teach_rel', teach_rel_l))
     # try:
-    cursor = db.cursor()
-    cursor.execute(gen_sql('student', stu_l))
+    if not roll:
+        cursor.execute(gen_sql('student', stu_l))
+        cursor.execute(gen_sql('teacher', teacher_l))
     cursor.execute(gen_sql('course', course_l))
-    cursor.execute(gen_sql('teacher', teacher_l))
     cursor.execute(gen_sql('performance', performance_l))
     cursor.execute(gen_sql('teach_rel', teach_rel_l))
     cursor.execute(gen_sql('course_time', ctime_l))
-    db.commit()
     # except:
     #     db.rollback()
 
@@ -141,8 +144,8 @@ def reset():
     with open('schema.sql', 'r') as f:
         cursor = db.cursor()
         cursor.execute(f.read())
+        gen_data(cursor)
         db.commit()
-    gen_data()
 
 import sys
 

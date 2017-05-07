@@ -6,10 +6,11 @@
     <thead>
       <tr>
         <!-- <th>#</th> -->
-        <th><div style="width: 90px;">排名</div></th>
-        <th><div style="width: 90px;">学号</div></th>
-        <th><div style="width: 90px;">姓名</div></th>
+        <th><div style="width: 40px;">排名</div></th>
+        <th><div style="width: 70px;">学号</div></th>
+        <th><div style="width: 60px;">姓名</div></th>
         <th><div style="width: 90px;">GPA</div></th>
+        <th><div style="width: 90px;">已修学分</div></th>
       </tr>
     </thead>
     <tbody>
@@ -19,6 +20,7 @@
         <th> {{ stu.sno }} </th>
         <th> {{ stu.sname }} </th>
         <th> {{ stu.gpa }} </th>
+        <th> {{ stu.sumc }} </th>
       </tr>
       {% endfor %}
     </tbody>

@@ -7,7 +7,7 @@ import string
 import hashlib
 
 rw = RandomWords()
-db = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', charset='utf8')
+db1 = pymysql.connect(host='127.0.0.1', port=3306, password="", user='root', charset='utf8')
 
 last_name = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许',
 '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜', '戚', '谢', '邹', '喻', '柏', '水', '窦', '章',
@@ -41,9 +41,9 @@ def rand_tno():
 def rand_teacher():
     tno = rand_tno()
     psw = rand_str(8)
-    with db.cursor() as c:
+    with db1.cursor() as c:
         c.execute("insert into userinfo VALUES(%s, %s)", [tno, psw])
-        db.commit()
+        db1.commit()
     return (tno, rand_name(), choice(['M','F']), choice(['Professor', 'Lecturer']), None, None, hash(tno+psw))
 
 major_n = ['713', '710']
@@ -67,9 +67,9 @@ def hash(psw):
 def rand_stu():
     sno = rand_sno()
     psw = rand_str(8)
-    with db.cursor() as c:
+    with db1.cursor() as c:
         c.execute("insert into userinfo VALUES(%s, %s)", [sno, psw])
-        db.commit()
+        db1.commit()
     return (sno, rand_name(), choice(['M','F']), hash(sno+psw))
 
 course_code = ['COMP', 'PEDU', 'INFO', 'LAWS']
@@ -142,10 +142,10 @@ def gen_data(cursor, roll=False):
 
 def reset():
     with open('schema.sql', 'r') as f:
-        cursor = db.cursor()
+        cursor = db1.cursor()
         cursor.execute(f.read())
         gen_data(cursor)
-        db.commit()
+        db1.commit()
 
 import sys
 

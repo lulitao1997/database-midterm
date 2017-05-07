@@ -28,7 +28,7 @@ def before_request():
 def page_home():
     if g.is_stu: return redirect('dashboard-coursespossessed')
     elif g.id not in ADMIN_ACCOUNT: return redirect('tdashboard-coursespossessed')
-    elif g.id is not NULL: return redirect('/admin_manage')
+    elif g.id is not None: return redirect('/admin_manage')
     else: return render_template('welcome.html')
 
 @app.route('/please_login')
@@ -38,8 +38,12 @@ def page_please_login():
 @app.route('/logout')
 def page_logout():
     flash('登出成功', 'success')
-    del session['id']
-    del session['name']
+    try:
+        del session['id']
+        del session['name']
+        del session['is_stu']
+    except:
+        pass
     return redirect('/')
 
 @app.route('/login')
@@ -269,12 +273,13 @@ def page_teacher_info(tno):
     )
 
 def get_sturnk():
-    it = run_sql("""select sno, sname, SUM(credit*grade)/SUM(credit) as gpa
+    it = run_sql("""select sno, sname, SUM(credit*grade)/SUM(credit) as gpa, SUM(credit) as sumc
     from student natural join performance natural join course
-    group by sno
+    where grade is not NULL
+    group by sno, sname
     having gpa is not NULL
     order by gpa DESC
-    """, None, ["sno", "sname", "gpa"])
+    """, None, ["sno", "sname", "gpa", "sumc"])
     # return str([stu for stu in it])
     stunum = 0
     rnk = 0
@@ -401,7 +406,7 @@ def tdashboard_teacherinfo_post():
     return redirect(g.url_path)
 
 from config import *
-
+import sys
 if __name__ == '__main__':
-    reset()
+    if '--first' in sys.argv: reset()
     app.run(debug=True)

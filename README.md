@@ -21,15 +21,12 @@
 3. 建立数据库及随机生成数据
 ``` bash
     # 先开启mysql
-    mysql -u root
+    mysql.server start
     # 在另一个终端里
-    python config.py
+    python config.py --first
 ```
 
 # todo
-
-    考虑加一个显示排名的页面
-
 
     数据库中加入学生专业信息
 
@@ -38,8 +35,6 @@
     数据库中课程加入教室属性
 
     想办法高效的计算可选课程总共有多少页
-
-    Admin页面？？
 
 
 # 变量声明

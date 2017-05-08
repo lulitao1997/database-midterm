@@ -227,27 +227,48 @@ def page_courseinfo(cid):
         description=c2.fetchall()[0][0]
     )
 
-@app.route('/dashboard-coursesdone')
-def page_coursedone():
-    with db.cursor() as cursor:
-        cursor.execute("""
-            select SUM(grade*credit)/SUM(credit), SUM(credit) from performance natural join course
-            where sno=%s and grade is not NULL
-            group by sno""", [g.id])
-        # return str(cursor.fetchall())
-        try:
-            (gpa, sum_credit) = cursor.fetchall()[0]
-        except:
-            (gpa, sum_credit) = (None, None)
-    courses = get_courses("""select distinct cno, cname ,credit, grade from performance natural join course as A
-    where sno=%s and grade is not NULL""", [g.id], ["cno", "cname", "credit", "grade"], hascells=False)
+@app.route('/dashboard-coursesdone-<year>')
+def page_coursedone_y(year):
+    if year == SEMESTER:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                select SUM(grade*credit)/SUM(credit), SUM(credit) from performance natural join course
+                where sno=%s and grade is not NULL
+                group by sno""", [g.id])
+            # return str(cursor.fetchall())
+            try:
+                (gpa, sum_credit) = cursor.fetchall()[0]
+            except:
+                (gpa, sum_credit) = (None, None)
+        courses = get_courses("""select distinct cno, cname ,credit, grade from performance natural join course as A
+        where sno=%s and grade is not NULL""", [g.id], ["cno", "cname", "credit", "grade"], hascells=False)
+    else:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                select SUM(grade*credit)/SUM(credit), SUM(credit) from past_performance natural join past_course
+                where sno=%s and grade is not NULL and stime=%s
+                group by sno""", [g.id, year])
+            # return str(cursor.fetchall())
+            try:
+                (gpa, sum_credit) = cursor.fetchall()[0]
+            except:
+                (gpa, sum_credit) = (None, None)
+        courses = get_courses("""select distinct cno, cname ,credit, grade from past_performance natural join past_course as A
+        where sno=%s and grade is not NULL and stime=%s""", [g.id, year], ["cno", "cname", "credit", "grade"], hascells=False)
+
     return render_template(
         'dashboard-coursesdone.html',
         course = courses,
         gpa = gpa,
         credit = sum_credit,
-        sidebar_name = 'coursesdone'
+        sidebar_name = 'coursesdone',
+        years = list(range(2016, SEMESTER+1))
     )
+
+@app.route('/dashboard-coursesdone')
+def page_coursedone():
+    return page_coursedone_y(SEMESTER)
+
 @app.route('/dashboard-coursesdone', methods=['POST'])
 def dashboard_coursesdone_post():
     if 'relearn' in request.form: # 请求重修
@@ -258,6 +279,7 @@ def dashboard_coursesdone_post():
             cursor.execute('insert into performance values(%s, %s, NULL)', [g.id, cno])
             db.commit()
         except:
+            flash("该课程与当前选课冲突", 'error')
             db.rollback()
         return redirect(g.url_path)
     return 'fucked!'

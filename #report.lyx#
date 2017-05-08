@@ -1,0 +1,294 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen true
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3.18cm
+\topmargin 2.54cm
+\rightmargin 3.18cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle plain
+\listings_params "language={C++},basicstyle={\linespread{1} \ttfamily },frame=single,keywordstyle={\bfseries},tabsize=4,breaklines={true}"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+“旦复大学”教务管理系统
+\end_layout
+
+\begin_layout Author
+卢力韬 15307130084 王鹏 15307130xxx
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Subsection
+使用方法
+\end_layout
+
+\begin_layout Enumerate
+安装virtualenv
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pip3 install virtualenv
+\end_layout
+
+\begin_layout Plain Layout
+
+cd project_folder
+\end_layout
+
+\begin_layout Plain Layout
+
+virtualenv venv
+\end_layout
+
+\begin_layout Plain Layout
+
+source venv/bin/activate
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+安装所有依赖
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pip install -r requirments.txt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+建立数据库及随机生成数据
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+# 先开启mysql
+\end_layout
+
+\begin_layout Plain Layout
+
+mysql.server start
+\end_layout
+
+\begin_layout Plain Layout
+
+# 开启网页
+\end_layout
+
+\begin_layout Plain Layout
+
+python config.py --first
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+访问localhost:5000
+\end_layout
+
+\begin_layout Subsection
+功能
+\end_layout
+
+\begin_layout Subsubsection
+学生端
+\end_layout
+
+\begin_layout Enumerate
+选课、退课
+\end_layout
+
+\begin_layout Enumerate
+查看可选课程（可以通过课程号，课程名来检索）
+\end_layout
+
+\begin_layout Enumerate
+查看自己的课程表
+\end_layout
+
+\begin_layout Enumerate
+查看自己每门课的成绩
+\end_layout
+
+\begin_layout Enumerate
+重修已学过的课程
+\end_layout
+
+\begin_layout Enumerate
+查看自己排名和其他人的分数（保护隐私，无法查看其他人排名）
+\end_layout
+
+\begin_layout Subsubsection
+教师端
+\end_layout
+
+\begin_layout Enumerate
+查看自己教授的课程
+\end_layout
+
+\begin_layout Enumerate
+查看自己的课程表
+\end_layout
+
+\begin_layout Enumerate
+修改自己的联系方式
+\end_layout
+
+\begin_layout Enumerate
+给自己教授的课程的学生登记分数
+\end_layout
+
+\begin_layout Enumerate
+开除学生
+\end_layout
+
+\begin_layout Subsubsection
+管理员端
+\end_layout
+
+\begin_layout Enumerate
+将本学期的内容归入档案
+\end_layout
+
+\begin_layout Enumerate
+导入下一学期的课程信息（为简化，本pj中是导入随机生成的信息）
+\end_layout
+
+\begin_layout Section
+系统设计
+\end_layout
+
+\begin_layout Subsection
+ER图
+\end_layout
+
+\begin_layout Subsection
+关系模式
+\end_layout
+
+\begin_layout Subsection
+开发流程
+\end_layout
+
+\begin_layout Subsection
+界面展示
+\end_layout
+
+\begin_layout Section
+分工情况
+\end_layout
+
+\begin_layout Standard
+卢力韬：后端+排名、管理员页面前端+报告其他部分编写
+\end_layout
+
+\begin_layout Standard
+王鹏：其他所有前端+报告第二节编写
+\end_layout
+
+\end_body
+\end_document

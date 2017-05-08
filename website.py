@@ -229,6 +229,7 @@ def page_courseinfo(cid):
 
 @app.route('/dashboard-coursesdone-<year>')
 def page_coursedone_y(year):
+    year = int(year)
     if year == SEMESTER:
         with db.cursor() as cursor:
             cursor.execute("""
@@ -286,7 +287,7 @@ def dashboard_coursesdone_post():
 
 @app.route('/dashboard-teacherinfo-<tno>')
 def page_teacher_info(tno):
-    it = run_sql("select tname, prof from teacher where tno=%s", [tno], ["tname", "prof"])
+    it = run_sql("select tname, prof, email, tel from teacher where tno=%s", [tno], ["tname", "prof", "email", "phno"])
     return render_template(
         'dashboard-teacherinfo.html',
         teacher = next(it),

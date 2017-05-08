@@ -3,10 +3,23 @@
 {% block dashboard_content %}
 
 <div class="row" style="font-size: 20px;">
-	<div class="col-md-8"><h2>已修课程</h2></div>
-	<div class="col-md-2">总学分: {{ credit }}</div>
-	<div class="col-md-2">总绩点: {{ gpa }} </div>
+	<div class="col-md-7">
+		<div class="dropdown">
+		  <a class="btn btn-secondary dropdown-toggle" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			选择学年
+		  </a>
+
+		  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+			{% for year in years %}
+			<a class="dropdown-item" href="/dashboard-coursesdone-{{ year }}">{{ year }}</a>
+		  	{% endfor %}
+		  </div>
+		</div>
+	</div>
+	<div class="col-md-2">学分: {{ credit }}</div>
+	<div class="col-md-3">绩点: {{ gpa }} </div>
 </div>
+<br>
 <table class="table table-striped table-bordered">
 	<thead>
 		<tr>

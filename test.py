@@ -158,8 +158,8 @@ def test_dashboard_teacherinfo(tno):
 	)
 	
 # dashboard-courses-done 已修课程
-@app.route('/dashboard-coursesdone')
-def test_dashboard_coursesdone():
+@app.route('/dashboard-coursesdone-<year>')
+def test_dashboard_coursesdone(year):
 	cs = {
 		'cno' : '12.3',
 		'cname' : 'cs',
@@ -171,12 +171,14 @@ def test_dashboard_coursesdone():
 		'grade' : 'F'		
 	}
 	course = [cs]
+	years = [ 2015, 2016, 2017 ]
 	return render_template(
 		'dashboard-coursesdone.html',
 		course = course,
 		gpa = '4.1',
 		credit = '150.5',
-		sidebar_name = 'coursesdone'
+		sidebar_name = 'coursesdone',
+		years = years
 	)
 
 @app.route('/dashboard-coursesdone', methods=['POST'])
